@@ -1,0 +1,33 @@
+# Deploying Ten Thousand Robots: Scalable Imitaion Learning for Lifelong Multi-Agent Path Finding
+This repo maintains the code for the paper. There are some other amazing repos involved and maintained in the `lmapf_lib` folder. 
+1. [Guided-PIBT](https://github.com/nobodyczcz/Guided-PIBT)
+2. [learn-to-follow](https://github.com/AIRI-Institute/learn-to-follow)
+3. [MAPFCompetition2023](https://github.com/DiligentPanda/MAPF-LRR2023): The Winning Solution of the League of Robot Runner Competition 2023. The League of Robot Runner Competition 2024 has a stronger winner: [EPIBT](git@github.com:Straple/LORR24.git) (Can you find a way to make it combined with learning?).
+4. [RHCR](https://github.com/Jiaoyang-Li/RHCR)
+
+Examples for training and evaluation are provided as scripts below.  All training and evaluation heavily rely on experiment configs in the `expr_configs`. 
+
+I usually train models with 4 RTX4090D (24GB) and roughly 64 vCPUs. But since it is imitation learning fundamentally, less computational resources also work (need to modifythe experiment configs). 
+
+But this repo is quite messy now for those who need to modify the internal code, because it involves both complex search- and learning-based methods, builds upon a distributed framework for large-scale training, and contains much more than what we have in the paper.
+
+On the hand, the ideas conveyed by the paper are actually straightforward and it is easy to implement for any other works.
+
+Please contact me (reverse:
+moc.liamxof@rivers
+) if you have any questions.
+
+## Install Libs & Compile PIBT and LNS
+```
+./compile.sh
+```
+
+## Train
+See `train_LMAPF.sh`.
+
+## Eval
+See `eval.sh` for how to evaluate on the benchmark of this paper.
+See `eval_ltf.sh` for how to evaluate on the benchmark of the learn-to-follow paper.
+
+## Benchmark
+The benchmark data in this paper is in the `lmapf_lib/data/papere_exp_v3` folder. They use the same data format as the competition [League of the Robot Runner 2023](https://github.com/MAPF-Competition/Benchmark-Archive/tree/main/2023%20Competition).

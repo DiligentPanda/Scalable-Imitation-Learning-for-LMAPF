@@ -1,0 +1,1 @@
+{"mapFile": "../../large/random_256_20.map", "agentFile": "../../agents/random_256_20/random_256_20_3_12000.agents", "teamSize": 12000, "taskFile": "../../tasks/random_256_20/random_256_20_3.tasks", "numTasksReveal": 1, "taskAssignmentStrategy": "roundrobin"}

@@ -1,0 +1,32 @@
+ray==1.13.0
+pyyaml
+omegaconf~=2.3.0
+grpcio
+grpcio-tools
+protobuf==3.20.0
+protobuf3-to-dict==0.1.5
+pickle5~=0.0.11
+numpy
+tensorboardX~=2.1
+tensorboard
+readerwriterlock
+nashpy==0.0.21
+psutil~=5.8.0
+gym==0.22.0
+dataclasses==0.6
+wrapt==1.12.1
+dm-tree~=0.1.7
+parallel-ssh==2.11.1
+tabulate==0.8.10
+six==1.16.0
+easydict==1.9
+ipython
+colorlog==6.6.0
+#hiredis==2.0.0
+matplotlib==3.5.3
+pandas~=1.5.1
+wandb
+pogema==1.2.2
+h5py
+# gfootball (not needed, a legacy env could be remove later) install manually following https://github.com/google-research/football 
+# torch (manually) pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124

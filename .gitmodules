@@ -1,0 +1,12 @@
+[submodule "lmapf_lib/MAPFCompetition2023"]
+	path = lmapf_lib/MAPFCompetition2023
+	url = git@github.com:DiligentPanda/MAPFCompetition2023.git
+[submodule "lmapf_lib/RHCR"]
+	path = lmapf_lib/RHCR
+	url = git@github.com:DiligentPanda/RHCR.git
+[submodule "lmapf_lib/Guided-PIBT"]
+	path = lmapf_lib/Guided-PIBT
+	url = git@github.com:DiligentPanda/Guided-PIBT.git
+[submodule "lmapf_lib/learn-to-follow"]
+	path = lmapf_lib/learn-to-follow
+	url = git@github.com:AIRI-Institute/learn-to-follow.git

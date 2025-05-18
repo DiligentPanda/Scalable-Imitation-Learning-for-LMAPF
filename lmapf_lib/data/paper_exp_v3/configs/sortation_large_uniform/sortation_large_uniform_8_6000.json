@@ -1,0 +1,1 @@
+{"mapFile": "../../large/sortation_large.map", "agentFile": "../../agents/sortation_large_uniform/sortation_large_uniform_8_6000.agents", "teamSize": 6000, "taskFile": "../../tasks/sortation_large_uniform/sortation_large_uniform_8.tasks", "numTasksReveal": 1, "taskAssignmentStrategy": "roundrobin"}

@@ -1,0 +1,8 @@
+{
+    "mapFile": "maps/room-64-64-8.map",
+    "agentFile": "agents/room-64-64-8_19_1000.agents",
+    "teamSize": 1000,
+    "taskFile": "tasks/room-64-64-8_19.task",
+    "numTasksReveal": 1,
+    "taskAssignmentStrategy": "roundrobin"
+}

@@ -1,0 +1,1 @@
+{"mapFile": "../../small/warehouse_virtual_robots.map", "agentFile": "../../agents/warehouse_virtual_robots/warehouse_virtual_robots_22_100.agents", "teamSize": 100, "taskFile": "../../tasks/warehouse_virtual_robots/warehouse_virtual_robots_22.tasks", "numTasksReveal": 1, "taskAssignmentStrategy": "roundrobin"}

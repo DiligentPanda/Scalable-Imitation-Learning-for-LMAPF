@@ -1,0 +1,1 @@
+{"mapFile": "../../large/warehouse_large.map", "agentFile": "../../agents/warehouse_large/warehouse_large_22_8000.agents", "teamSize": 8000, "taskFile": "../../tasks/warehouse_large/warehouse_large_22.tasks", "numTasksReveal": 1, "taskAssignmentStrategy": "roundrobin"}

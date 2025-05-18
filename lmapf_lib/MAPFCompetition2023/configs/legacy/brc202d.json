@@ -1,0 +1,161 @@
+{
+    "lifelong_solver_name": [
+        {
+            "n_agents": 1000000,
+            "value": "LNS"
+        }
+    ],
+    "map_weights_path": [
+        {
+            "n_agents": 1000000,
+            "value": "scripts/brc202d_weight_002.w"
+        }
+    ],
+    "max_agents_in_use": [
+        {
+            "n_agents": 1000000,
+            "value": 2500
+        }
+    ],
+    "max_execution_steps": [
+        {
+            "n_agents": 1000000,
+            "value": 30000
+        }
+    ],
+    "disable_corner_target_agents": [
+        {
+            "n_agents": 1000000,
+            "value": false
+        }
+    ],
+    "max_task_completed": [
+        {
+            "n_agents": 1000000,
+            "value": 175000
+        }
+    ],
+    "LNS": {
+        "seed": 0,
+        "cutoffTime": 0.95,
+        "screen": 0,
+        "initAlgo": "LaCAM2",
+        "replanAlgo": "PP",
+        "destoryStrategy": "Adaptive",
+        "neighborSize": 8,
+        "maxIterations": 10000000,
+        "initLNS": false,
+        "initDestoryStrategy": "Adaptive",
+        "sipp": true,
+        "pibtWindow": 5,
+        "winPibtSoftmode": true,
+        "window_size_for_CT": [
+            {
+                "n_agents": 100000,
+                "value": 15
+            }
+        ],
+        "window_size_for_CAT":  [
+            {
+                "n_agents": 100000,
+                "value": 15
+            }
+        ],
+        "window_size_for_PATH":  [
+            {
+                "n_agents": 100000,
+                "value": 15
+            }
+        ],
+        "execution_window": 3,
+        "fix_ng_bug": [
+            {
+                "n_agents": 1000000,
+                "value": true
+            }
+        ],
+        "LaCAM2": {
+            "seed": 0,
+            "planning_window":  [
+                {
+                    "n_agents": 100000,
+                    "value": 15
+                }
+            ],
+            "execution_window": 1,
+            "use_external_executor": false,
+            "consider_rotation": false,
+            "use_orient_in_heuristic": true,
+            "use_slow_executor": false,
+            "SUO": {
+                "vertex_collision_cost": 1,
+                "iterations": 0,
+                "max_expanded": -1,
+                "window": 30,
+                "h_weight": 1.0
+            },
+            "order_strategy": [
+                {
+                    "n_agents": 1000000,
+                    "value": "early_time"
+                }
+            ],
+            "disable_agent_strategy": "tabu_locs",
+            "disable_agent_goals": true,
+            "tabu_locs_fp": "scripts/brc202d_tabu_locs.txt"
+        }
+    },
+    "LaCAM2": {
+        "seed": 100,
+        "planning_window": 1,
+        "execution_window": 1,
+        "use_external_executor": false,
+        "consider_rotation": true,
+        "use_orient_in_heuristic": true,
+        "use_slow_executor": false,
+        "SUO": {
+            "vertex_collision_cost": 1,
+            "iterations": 0,
+            "max_expanded": -1,
+            "window": 30,
+            "h_weight": 1.0
+        },
+        "order_strategy": [
+            {
+                "n_agents": 1000000,
+                "value": "early_time"
+            }
+        ],
+        "disable_agent_strategy": "uniform",
+        "disable_agent_goals": true,
+        "tabu_locs_fp": ""
+    },
+    "PIBT": {
+        "prior_type": "early_time"
+    },
+    "RHCR": {
+        "planning_window": 5,
+        "solver": "PBS",
+        "single_agent_solver": "SIPP",
+        "id": false,
+        "cutoffTime": 60,
+        "seed": 0,
+        "screen": 1,
+        "lazyP": false,
+        "simulation_time": 5000,
+        "simulation_window": 1,
+        "travel_time_window": 0,
+        "potential_function": "None",
+        "potential_threshold": 0,
+        "consider_rotation": true,
+        "robust": 0,
+        "CAT": false,
+        "hold_endpoints": false,
+        "dummy_paths": false,
+        "prioritize_start": true,
+        "suboptimal_bound": 1,
+        "log": false,
+        "output": "temp.txt"
+    },
+    "analysis_output": "analysis/test.csv"
+}

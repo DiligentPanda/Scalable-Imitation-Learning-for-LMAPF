@@ -1,0 +1,8 @@
+{
+    "mapFile": "maps/ost003d.map",
+    "agentFile": "agents/ost003d_9_12000.agents",
+    "teamSize": 12000,
+    "taskFile": "tasks/ost003d_9.task",
+    "numTasksReveal": 1,
+    "taskAssignmentStrategy": "roundrobin"
+}

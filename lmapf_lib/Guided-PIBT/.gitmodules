@@ -1,0 +1,6 @@
+[submodule "Benchmark-Archive"]
+	path = Benchmark-Archive
+	url = git@github.com:MAPF-Competition/Benchmark-Archive.git
+[submodule "guided-pibt/pybind11"]
+	path = guided-pibt/pybind11
+	url = git@github.com:pybind/pybind11.git

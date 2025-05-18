@@ -1,0 +1,1 @@
+{"mapFile": "../../small/Berlin_1_256_small.map", "agentFile": "../../agents/Berlin_1_256_small/Berlin_1_256_small_11_600.agents", "teamSize": 600, "taskFile": "../../tasks/Berlin_1_256_small/Berlin_1_256_small_11.tasks", "numTasksReveal": 1, "taskAssignmentStrategy": "roundrobin"}

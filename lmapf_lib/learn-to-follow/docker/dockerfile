@@ -1,0 +1,15 @@
+FROM pytorch/pytorch:1.13.1-cuda11.6-cudnn8-runtime
+ADD requirements.txt /tmp/
+RUN apt update && apt install -y build-essential ffmpeg libsm6 libxext6 git vim \
+    && pip install --no-cache-dir -r /tmp/requirements.txt \
+    && pip install --no-cache-dir importlib-metadata==4.13.0 --force-reinstall \
+    && apt-get purge -y build-essential \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && conda install -c conda-forge pybind11 \
+    && apt update && apt-get install -y cmake g++ wget
+
+RUN wget https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-linux-x64-1.14.1.tgz \
+    && tar -xf onnxruntime-linux-x64-1.14.1.tgz \
+    && cp onnxruntime-linux-x64-1.14.1/lib/* /usr/lib/ && cp onnxruntime-linux-x64-1.14.1/include/* /usr/include/

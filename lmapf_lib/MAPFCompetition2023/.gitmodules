@@ -1,0 +1,6 @@
+[submodule "viz"]
+	path = viz
+	url = https://github.com/DiligentPanda/MAPF2023Competition_PlanViz.git
+[submodule "pybind11"]
+	path = pybind11
+	url = https://github.com/pybind/pybind11.git

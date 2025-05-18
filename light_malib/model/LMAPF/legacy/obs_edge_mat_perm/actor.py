@@ -1,0 +1,148 @@
+import torch.nn as nn
+from gym.spaces import Discrete,Box
+from .ma_transformer import Decoder
+from .utils.transformer_act import discrete_autoregreesive_act, continuous_autoregreesive_act, discrete_parallel_act, continuous_parallel_act
+from light_malib.utils.episode import EpisodeKey
+import torch
+from light_malib.utils.logger import Logger
+
+class Actor(nn.Module):
+    def __init__(
+        self,
+        model_config,
+        action_space,
+        custom_config,
+        initialization,
+        backbone
+    ):
+        super().__init__()
+        
+        self.action_space=action_space
+        if isinstance(action_space,Discrete):
+            self.action_dim=action_space.n
+            action_type="Discrete"
+        elif isinstance(action_space,Box):
+            assert len(action_space.shape)==0
+            self.action_dim=action_space.shape[0]
+            action_type="Continuous"
+        else:
+            raise NotImplementedError
+        
+        # TODO(jh): remove. legacy.
+        self.rnn_layer_num=1
+        self.rnn_state_size=1
+        
+        self.dec_actor=model_config["dec_actor"]
+        self.share_actor=model_config["share_actor"]
+        
+        self.num_agents=backbone.num_agents
+        
+        self.decoder=Decoder(
+            obs_dim=backbone.obs_dim,
+            action_dim=self.action_dim,
+            n_block=backbone.num_blocks,
+            n_embd=backbone.embed_dim,
+            n_head=backbone.num_heads,
+            n_agent=backbone.num_agents,
+            action_type=action_type,
+            dec_actor=self.dec_actor,
+            share_actor=self.share_actor
+        )
+    
+    def forward(
+            self,
+            **kwargs
+        ):
+        
+        
+        global_observations=kwargs.get(EpisodeKey.CUR_GLOBAL_OBS,None)
+        observations=kwargs.get(EpisodeKey.CUR_OBS,None)
+        actor_rnn_states=kwargs.get(EpisodeKey.ACTOR_RNN_STATE,None)
+        rnn_masks=kwargs.get(EpisodeKey.DONE,None)
+        action_masks=kwargs.get(EpisodeKey.ACTION_MASK,None)
+        actions=kwargs.get(EpisodeKey.ACTION,None)
+        explore=kwargs.get("explore")
+        
+
+        obs_rep=observations["obs_rep"]
+        obs=observations["obs"]
+        edge_feats=observations["edge_feats"]
+
+
+        A = self.num_agents
+        B = obs.shape[0]//A
+
+        
+        deterministic= not explore
+        assert len(obs)%self.num_agents==0
+        batch_size=len(obs)//self.num_agents
+        
+        observations=obs[...,:-7-self.num_agents*2]
+        obs_neighboring_masks=obs[...,-7-self.num_agents*2:-7-self.num_agents]
+        #act_neighboring_masks=obs[...,-7-self.num_agents:-7]
+        perm_indices=obs[...,-7].long()
+        reverse_perm_indices=obs[...,-6].long()
+        
+        batch_indices=torch.arange(B,dtype=torch.long,device=observations.device)*A
+        batch_indices=batch_indices.reshape(B,1).repeat(1,A).reshape(-1)
+        
+        perm_indices+=batch_indices
+        reverse_perm_indices+=batch_indices
+        
+        obs=observations
+        # obs=obs[perm_indices]
+        # act_neighboring_masks=act_neighboring_masks[perm_indices]
+        # obs_rep=obs_rep[perm_indices]
+        # if actions is not None:
+        #     actions=actions[perm_indices]
+        # if action_masks is not None:
+        #     action_masks=action_masks[perm_indices]
+        
+        if actions is not None:
+            actions = actions[perm_indices]
+        
+        obs_rep=obs_rep.reshape(batch_size,self.num_agents,-1)
+        obs=obs.reshape(batch_size,self.num_agents,-1)
+        obs_neighboring_masks=obs_neighboring_masks.reshape(batch_size,self.num_agents,-1)
+        if actions is not None:
+            actions=actions.reshape(batch_size,self.num_agents,-1)
+        if action_masks is not None:
+            action_masks=action_masks.reshape(batch_size,self.num_agents,-1)
+        edge_feats=edge_feats.reshape(batch_size,self.num_agents,self.num_agents,-1)
+        
+        if actions is None:
+            # inference: sample actions
+            if isinstance(self.action_space,Discrete):
+                actions, action_log_probs, logits = discrete_autoregreesive_act(self.decoder, obs_rep, obs_rep, edge_feats, obs_neighboring_masks, batch_size,
+                                                                            self.num_agents, self.action_dim,
+                                                                            action_masks, deterministic)
+            else:
+                raise NotImplementedError
+                actions, action_log_probs = continuous_autoregreesive_act(self.decoder, obs_rep, obs, batch_size,
+                                                                                self.num_agents, self.action_dim,
+                                                                                deterministic)
+            entropy=None  
+        else:
+            # training: evaluate actions log probs
+            if isinstance(self.action_space,Discrete):
+                action_log_probs, entropy, logits = discrete_parallel_act(self.decoder, obs_rep, obs_rep, edge_feats, obs_neighboring_masks, actions, batch_size,
+                                                            self.num_agents, self.action_dim, action_masks)
+            else:
+                raise NotImplementedError
+                action_log_probs, entropy = continuous_parallel_act(self.decoder, obs_rep, obs, actions, batch_size,
+                                                            self.num_agents, self.action_dim)
+        
+        # TODO(jh): actions' shape should be 2-dim as well.
+        actions=actions.reshape(batch_size*self.num_agents)
+        action_log_probs=action_log_probs.reshape(batch_size*self.num_agents,-1)
+        logits=logits.reshape(batch_size*self.num_agents,-1)
+        if entropy is not None:
+            entropy=entropy.reshape(batch_size*self.num_agents,-1)
+            
+        actions=actions[reverse_perm_indices]
+        action_log_probs=action_log_probs[reverse_perm_indices]
+        logits=logits[reverse_perm_indices]
+        if entropy is not None:
+            entropy=entropy[reverse_perm_indices]
+        
+        return actions, actor_rnn_states, action_log_probs,  entropy, logits

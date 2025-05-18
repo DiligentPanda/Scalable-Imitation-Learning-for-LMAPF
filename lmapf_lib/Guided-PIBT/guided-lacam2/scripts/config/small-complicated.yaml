@@ -1,0 +1,10 @@
+num_min_agents: 10
+time_limit_sec: 10
+scen: scen-small-complicated
+maps:
+  - tree
+  - corners
+  - tunnel
+  - string
+  - loop-chain
+  - connector

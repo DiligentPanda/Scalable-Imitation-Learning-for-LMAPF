@@ -1,0 +1,1 @@
+{"mapFile": "../../large/Paris_1_256.map", "agentFile": "../../agents/Paris_1_256/Paris_1_256_16_9000.agents", "teamSize": 9000, "taskFile": "../../tasks/Paris_1_256/Paris_1_256_16.tasks", "numTasksReveal": 1, "taskAssignmentStrategy": "roundrobin"}

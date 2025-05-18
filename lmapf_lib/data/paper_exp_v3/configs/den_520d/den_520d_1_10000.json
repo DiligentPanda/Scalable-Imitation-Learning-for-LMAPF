@@ -1,0 +1,1 @@
+{"mapFile": "../../large/den_520d.map", "agentFile": "../../agents/den_520d/den_520d_1_10000.agents", "teamSize": 10000, "taskFile": "../../tasks/den_520d/den_520d_1.tasks", "numTasksReveal": 1, "taskAssignmentStrategy": "roundrobin"}

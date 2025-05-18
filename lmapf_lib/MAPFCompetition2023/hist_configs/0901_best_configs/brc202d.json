@@ -1,0 +1,40 @@
+{
+    "lifelong_solver_name": [
+        {
+            "n_agents": 200,
+            "value": "RHCR"
+        },
+        {
+            "n_agents": 1000000,
+            "value": "PIBT"
+        }
+    ],
+    "PIBT": {
+        "prior_type": "early_time"
+    },
+    "RHCR": {
+        "planning_window": 5,
+        "solver": "PBS",
+        "single_agent_solver": "SIPP",
+        "id": false,
+        "cutoffTime": 60,
+        "seed": 0,
+        "screen": 1,
+        "lazyP": false,
+        "simulation_time": 5000,
+        "simulation_window": 1,
+        "travel_time_window": 0,
+        "potential_function": "None",
+        "potential_threshold": 0,
+        "consider_rotation": true,
+        "robust": 0,
+        "CAT": false,
+        "hold_endpoints": false,
+        "dummy_paths": false,
+        "prioritize_start": true,
+        "suboptimal_bound": 1,
+        "log": false,
+        "output": "temp.txt"
+    },
+    "analysis_output": "analysis/test.csv"
+}

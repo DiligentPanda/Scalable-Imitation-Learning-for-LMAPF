@@ -1,0 +1,7 @@
+{
+    "map_file": "maps/kiva.map",
+    "agent_file": "maps/kiva_agents3.txt",
+    "task_file": "maps/kiva_tasks3.txt",
+    "num_tasks_reveal":1,
+    "task_assignment_strategy":"roundrobin"
+}
