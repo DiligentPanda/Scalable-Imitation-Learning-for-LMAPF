@@ -1,6 +1,6 @@
 set -ex
 
-# xargs sudo apt-get -y install < apt.txt
+sudo xargs apt-get -y install < apt.txt
 
 pip install -r requirements.txt
 pip install -e .

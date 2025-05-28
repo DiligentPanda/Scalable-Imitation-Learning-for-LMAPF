@@ -1,3 +1,6 @@
+# NEWS
+1. (2025-05-27) I have uploaded pretrained weights for static guidance. Please refer to the line 4 of the Table IV in the appendix for reproduction.
+
 # Deploying Ten Thousand Robots: Scalable Imitaion Learning for Lifelong Multi-Agent Path Finding
 This repo maintains the code for the paper. There are some other amazing repos involved and maintained in the `lmapf_lib` folder. 
 1. [Guided-PIBT](https://github.com/nobodyczcz/Guided-PIBT)
@@ -38,3 +41,4 @@ The benchmark data in this paper is in the `lmapf_lib/data/papere_exp_v3` folder
 3. add reproduction scripts.
 4. add documentation.
 5. organize/re-write code.
+    1. remove redundant code.
