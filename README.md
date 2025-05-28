@@ -31,3 +31,10 @@ See `eval_ltf.sh` for how to evaluate on the benchmark of the learn-to-follow pa
 
 ## Benchmark
 The benchmark data in this paper is in the `lmapf_lib/data/papere_exp_v3` folder. They use the same data format as the competition [League of the Robot Runner 2023](https://github.com/MAPF-Competition/Benchmark-Archive/tree/main/2023%20Competition).
+
+## TODO
+1. recompile everything in an empty env to check the dependencies.
+2. upload pretrained model weights.
+3. add reproduction scripts.
+4. add documentation.
+5. organize/re-write code.
