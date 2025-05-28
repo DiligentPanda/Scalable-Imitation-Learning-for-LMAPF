@@ -14,6 +14,7 @@ import time
 import torch.multiprocessing as multiprocessing
 import os
 # import threading
+import argparse
 
 import json
 from default_configs import default_configs
@@ -23,16 +24,37 @@ import sys
 # https://github.com/pytorch/pytorch/issues/82843
 multiprocessing.set_start_method("spawn", force=True)
 
-exp_name = sys.argv[1] 
-model_path = sys.argv[2] 
-WPPL_mode = sys.argv[3]
-num_agents = sys.argv[4]
+arg_parser = argparse.ArgumentParser(description="Evaluate SILLM performance on LMAPF tasks.")
+arg_parser.add_argument("--output_folder", type=str, default="exp", help="Output folder to save the results.")
+arg_parser.add_argument("--exp_name", type=str, help="Experiment name.")
+arg_parser.add_argument("--model_path", type=str, help="Path to the trained model.")
+arg_parser.add_argument("--WPPL_mode", type=str, help="WPPL mode to use.", choices=["PIBT","PIBT-RL","PIBT-LNS","PIBT-RL-LNS"])
+arg_parser.add_argument("--num_agents", type=str, help="Number of agents in the environment.")
+arg_parser.add_argument("--num_processes", type=int, default=1, help="Number of processes to use for evaluation.")
+arg_parser.add_argument("--num_devices", type=int, default=1, help="Number of GPU devices to use for evaluation.")
+arg_parser.add_argument("--num_episodes_per_instance", type=int, default=8, help="Number of episodes to run per instance.")
+arg_parser.add_argument("--rollout_length", type=int, default=None, help="Simulation steps of each test. If None, use the default length from the config.")
+arg_parser.add_argument("--LNS_max_iterations", type=int, default=5000*8, help="Maximum iterations for LNS.")
+arg_parser.add_argument("--LNS_num_threads", type=int, default=8, help="Number of threads to use for LNS.")
+arg_parser.add_argument("--collect_log", action="store_true", help="Whether to collect logs during evaluation.")
+arg_parser.add_argument("--check_valid", action="store_true", help="Whether to check the validity of the movement each step.")
+
+args = arg_parser.parse_args()
+
+output_folder = args.output_folder
+
+exp_name = args.exp_name
+model_path = args.model_path
+WPPL_mode = args.WPPL_mode
+num_agents = args.num_agents
 
 config_path = default_configs[exp_name]["config_path"].replace("NUM_AGENTS", num_agents)
 
-rollout_length=None
-max_iterations=5000*8 # 5000
-num_threads=8 # 1
+max_iterations=args.LNS_max_iterations # 5000
+num_threads=args.LNS_num_threads # 1
+
+rollout_length=args.rollout_length
+
 collect_log=False
 check_valid=False
 
@@ -42,9 +64,10 @@ predefined_starts_template= default_configs[exp_name]["predefined_starts_templat
 predefined_tasks_indexed=True
 predefined_tasks_template= default_configs[exp_name]["predefined_tasks_template"].replace("NUM_AGENTS", num_agents) #"/root/GRF_MARL/lmapf_lib/MAPFCompetition2023/our_problems/maze.domain/tasks/maze_1_256_20000_0_rs19.tasks"#"lmapf_lib/Guided-PIBT/guided-pibt/benchmark-lifelong/tasks/sortation_small_{}.task" #"lmapf_lib/Guided-PIBT/guided-pibt/benchmark-lifelong/tasks/warehouse_large_{}.tasks" #"lmapf_lib/MAPFCompetition2023/example_problems/random.domain/tasks/random-32-32-20-400.tasks"
 
-num_devices=4
-num_processes=4
-num_episode_per_instance=8
+num_devices=args.num_devices
+num_processes=args.num_processes
+num_episodes_per_instance=args.num_episodes_per_instance
+
 # should not use the map filters in general. it is only for convienence
 map_filter_keep=None#["mazes-s17_wc6_od55"]#["test-mazes-s41_wc5_od50","test-mazes-s45_wc4_od55"]#None
 # interesting: not good at the following two maps
@@ -61,13 +84,14 @@ basic_info={
     "num_threads": num_threads,
     "num_devices": num_devices,
     "num_processes": num_processes,
-    "num_episode_per_instance": num_episode_per_instance
+    "num_episodes_per_instance": num_episodes_per_instance
 }
 
 
 timestamp = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-output_folder = os.path.join(model_path, "eval/{}_{}_{}_{}".format(timestamp,exp_name,WPPL_mode,num_agents))
+output_folder = os.path.join(output_folder, "eval/{}_{}_{}_{}".format(timestamp,exp_name,WPPL_mode,num_agents))
 log_folder = os.path.join(output_folder,"log")
+os.makedirs(log_folder, exist_ok=True)
 
 def get_model_num_params(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -238,7 +262,7 @@ if __name__=="__main__":
     np.random.seed(seed)
     exp_args=[]
     idx=0
-    for jdx in range(num_episode_per_instance):
+    for jdx in range(num_episodes_per_instance):
         for map_name,num_agents in env.map_manager.instances_list:
             seed=np.random.randint(0, np.iinfo(np.int32).max)
             exp_args.append((idx, config_path, model_path, seed, map_name, num_agents))
@@ -331,7 +355,7 @@ if __name__=="__main__":
     all_summary_mean_step_time=get_stats(mean_step_times)
     summaries={
         "all": {
-            "thrpoughput": all_summary_throughput,
+            "throughput": all_summary_throughput,
             "mean_step_time": all_summary_mean_step_time
         },
         "instances": {},

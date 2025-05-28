@@ -4,6 +4,7 @@ datasets
 temp/
 /expr_log
 test*.json
+exp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
