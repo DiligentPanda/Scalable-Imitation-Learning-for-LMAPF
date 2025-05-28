@@ -1,7 +1,10 @@
-# NEWS
-1. (2025-05-27) I have uploaded pretrained weights for static guidance. Please refer to the line 4 of the Table IV in the appendix for reproduction.
-
 # Deploying Ten Thousand Robots: Scalable Imitaion Learning for Lifelong Multi-Agent Path Finding
+
+## NEWS
+1. (2025-05-27) I have uploaded pretrained weights for static guidance on the benchmark of this paper. Please refer to the line 4 of the Table IV in the appendix for reproduction. (using `eval.sh`.)
+2. (2025-05-27) I have uploaded pretrained weights for Backward Dijkstra heuristics on the learn-to-follow benchmark. Please refer to the Figure 9 in the appendix for reproduction. (using `eval_ltf.sh`.)
+
+## Introduction
 This repo maintains the code for the paper. There are some other amazing repos involved and maintained in the `lmapf_lib` folder. 
 1. [Guided-PIBT](https://github.com/nobodyczcz/Guided-PIBT)
 2. [learn-to-follow](https://github.com/AIRI-Institute/learn-to-follow)
