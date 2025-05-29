@@ -29,7 +29,7 @@ moc.liamxof@rivers
 ```
 
 ## Train
-See `train_LMAPF.sh`.
+See `train.sh`.
 
 ## Eval
 See `eval.sh` for how to evaluate on the benchmark of this paper.
