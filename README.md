@@ -13,8 +13,6 @@ This repo maintains the code for the paper. There are some other amazing repos i
 
 Examples for training and evaluation are provided as scripts below.  All training and evaluation heavily rely on experiment configs in the `expr_configs`. 
 
-I usually train models with 4 RTX4090D (24GB) and roughly 64 vCPUs. But since it is imitation learning fundamentally, less computational resources also work (need to modifythe experiment configs). 
-
 But this repo is quite messy now for those who need to modify the internal code, because it involves both complex search- and learning-based methods, builds upon a distributed framework for large-scale training, and contains much more than what we have in the paper.
 
 On the hand, the ideas conveyed by the paper are actually straightforward and it is easy to implement for any other works.
@@ -28,8 +26,40 @@ moc.liamxof@rivers
 ./compile.sh
 ```
 
+## File Structures
+1. Configuration files are defined in the folder `expr_configs/paper_exps_v3`.
+2. Training logic is defined in the file `light_malib/framework/ppo_runner.py`.
+3. Rollout function (simulation) are defined in the file `light_malib/rollout/rollout_func_LMAPF.py`.
+4. Neural network models are defined in the folder `light_malib/model/LMAPF`.
+5. Pretrained weights are in the folder `pretrained_models`.
+6. The training logs are by default in the folder `logs`. Tensorboard can be used to monitor the training. The subfolder `agent_0` will contain the weight checkpoints.
+
 ## Train
-See `train.sh`.
+See `train.sh`. The training successfully starts for imiation learning if you see something similar to the following figure, which states that the algorithm starts to collecting training data.
+
+![successful_run](figs/successful_run.png)
+
+### Configuration of experiments
+Please take a look at lines with **NOTE** in comments in the example configuration file `expr_configs/paper_exps_v3/small/bootstrap_from_pibt_iter1_sortation_small_a600_s500_none_annotated_1gpu.yaml`. These lines are those ones you probably want to modify in your experiments.
+
+### Computational Resources
+I usually train models with 4 RTX4090D (24GB) and roughly 64 vCPUs. But since it is imitation learning fundamentally, less computational resources also work (need to modifythe experiment configs). 
+
+`expr_configs/paper_exps_v3/small/bootstrap_from_pibt_iter1_sortation_small_a600_s500_none_annotated_1gpu.yaml` gives an example for 1 RTX4090D (24GB memory) and 16 vCPUs (80GB memory).
+
+Depending on the numbers of CPUs, GPUs and their memories: you may need to adjust the following parameters in the configuration files:
+1. framework
+    1. max_dagger_iterations
+    2. num_episodes_per_iter
+2. rollout_manager:
+    1. num_workers: the number of works to collect data. must < the total number of cpus. because some other cpus are used for other processes according to the design of the distributed computation framework, Ray.
+    2. batch_size
+    3. eval_batch_size
+3. training_manager
+    1. batch_size: should be kept the same as the `rollout_manager.batch_size`.
+    2. num_trainers: should be set the number of GPUs to use.
+
+For example, the default number in other configurations is for 4 GPUs and 64 vCPUs and if you want to use 1 GPUs and 16 vCPUs, you can divide the number of `rollout_manager.num_workers` and `training_manger.num_trainers` by 4. Since you probably don't want to wait for too long in the training because of the reduction in computational resources, you can divide other parameters mentioned above by 4. (CPU and GPU memories might also be the reason for reducing these parameters.)
 
 ## Eval
 See `eval.sh` for how to evaluate on the benchmark of this paper.
