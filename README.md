@@ -76,3 +76,4 @@ The benchmark data in this paper is in the `lmapf_lib/data/papere_exp_v3` folder
 4. add documentation.
 5. organize/re-write code.
     1. remove redundant code.
+6. add scripts to make it easier to generate benchmark for new maps. 
