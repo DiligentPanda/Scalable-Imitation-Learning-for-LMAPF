@@ -8,7 +8,7 @@
 This repo maintains the code for the paper. There are some other amazing repos involved and maintained in the `lmapf_lib` folder. 
 1. [Guided-PIBT](https://github.com/nobodyczcz/Guided-PIBT)
 2. [learn-to-follow](https://github.com/AIRI-Institute/learn-to-follow)
-3. [MAPFCompetition2023](https://github.com/DiligentPanda/MAPF-LRR2023): The Winning Solution of the League of Robot Runner Competition 2023. The League of Robot Runner Competition 2024 has a stronger winner: [EPIBT](git@github.com:Straple/LORR24.git) (Can you find a way to make it combined with learning?).
+3. [MAPFCompetition2023](https://github.com/DiligentPanda/MAPF-LRR2023): The Winning Solution of the League of Robot Runner Competition 2023. The League of Robot Runner Competition 2024 has a stronger winner: [EPIBT](https://github.com/Straple/LORR24), if you are interested in search-based approaches.
 4. [RHCR](https://github.com/Jiaoyang-Li/RHCR)
 
 Examples for training and evaluation are provided as scripts below.  All training and evaluation heavily rely on experiment configs in the `expr_configs`. 
