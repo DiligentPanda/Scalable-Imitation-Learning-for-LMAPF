@@ -3,6 +3,7 @@
 ## NEWS
 1. (2025-05-27) I have uploaded pretrained weights for static guidance on the benchmark of this paper. Please refer to the line 4 of the Table IV in the appendix for reproduction. (using `eval.sh`.)
 2. (2025-05-27) I have uploaded pretrained weights for Backward Dijkstra heuristics on the learn-to-follow benchmark. Please refer to the Figure 9 in the appendix for reproduction. (using `eval_ltf.sh`.)
+3. (2025-05-29) I have added more explanation for training.
 
 ## Introduction
 This repo maintains the code for the paper. There are some other amazing repos involved and maintained in the `lmapf_lib` folder. 
@@ -34,7 +35,7 @@ moc.liamxof@rivers
 5. Pretrained weights are in the folder `pretrained_models`.
 6. The training logs are by default in the folder `logs`. Tensorboard can be used to monitor the training. The subfolder `agent_0` will contain the weight checkpoints.
 
-## Train
+## Training
 See `train.sh`. The training successfully starts for imiation learning if you see something similar to the following figure, which states that the algorithm starts to collecting training data.
 
 ![successful_run](figs/successful_run.png)
@@ -61,7 +62,7 @@ Depending on the numbers of CPUs, GPUs and their memories: you may need to adjus
 
 For example, the default number in other configurations is for 4 GPUs and 64 vCPUs and if you want to use 1 GPUs and 16 vCPUs, you can divide the number of `rollout_manager.num_workers` and `training_manger.num_trainers` by 4. Since you probably don't want to wait for too long in the training because of the reduction in computational resources, you can divide other parameters mentioned above by 4. (CPU and GPU memories might also be the reason for reducing these parameters.)
 
-## Eval
+## Evaluation
 See `eval.sh` for how to evaluate on the benchmark of this paper.
 See `eval_ltf.sh` for how to evaluate on the benchmark of the learn-to-follow paper.
 
