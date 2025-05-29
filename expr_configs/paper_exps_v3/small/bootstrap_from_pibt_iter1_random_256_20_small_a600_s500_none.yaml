@@ -92,7 +92,7 @@ rollout_manager:
         learn_to_follow_maps_path: 
         agent_bins:
         map_path: "lmapf_lib/data/paper_exp_v3/small/random_256_20_small.map"
-        map_weights_path: "lmapf_lib/weight/random_256_20_small_w001.w" # not supported, keep it ""
+        map_weights_path: "lmapf_lib/weight/random_256_20_small_w001.w" 
         num_robots: 600
         device: "cpu"
         rollout_length: 500

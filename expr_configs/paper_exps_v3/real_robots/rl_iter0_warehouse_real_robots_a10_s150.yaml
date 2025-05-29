@@ -90,7 +90,7 @@ rollout_manager:
         learn_to_follow_maps_path: 
         agent_bins:
         map_path: "lmapf_lib/data/paper_exp_v3/small/warehouse_real_robots.map"
-        map_weights_path: "lmapf_lib/weight/warehouse_real_robots_w001.w" # not supported, keep it ""
+        map_weights_path: "lmapf_lib/weight/warehouse_real_robots_w001.w" 
         num_robots: 10
         device: "cpu"
         rollout_length: 150

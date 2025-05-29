@@ -90,7 +90,7 @@ rollout_manager:
         learn_to_follow_maps_path: "lmapf_lib/data/learn-to-follow/test-maps_den520_downscaled.yaml"
         agent_bins: [256]
         map_path:
-        map_weights_path: "" # not supported, keep it ""
+        map_weights_path: "" 
         num_robots: 
         device: "cpu"
         rollout_length: 512

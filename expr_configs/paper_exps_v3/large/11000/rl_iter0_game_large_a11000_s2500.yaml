@@ -90,7 +90,7 @@ rollout_manager:
         learn_to_follow_maps_path: 
         agent_bins:
         map_path: "lmapf_lib/data/paper_exp_v3/large/den_520d.map"
-        map_weights_path: "" # not supported, keep it ""
+        map_weights_path: "" 
         num_robots: 11000
         device: "cuda"
         rollout_length: 2500
