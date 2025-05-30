@@ -79,3 +79,4 @@ You can take a look at the last tens of lines in the file `light_malib/envs/LMAP
 4. add documentation.
 5. organize/re-write code.
     1. remove redundant code.
+6. add scripts to make it easier to generate benchmark for new maps. 
