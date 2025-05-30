@@ -3,7 +3,7 @@
 ## NEWS
 1. (2025-05-27) I have uploaded pretrained weights for static guidance on the benchmark of this paper. Please refer to the line 4 of the Table IV in the appendix for reproduction. (using `eval.sh`.)
 2. (2025-05-27) I have uploaded pretrained weights for Backward Dijkstra heuristics on the learn-to-follow benchmark. Please refer to the Figure 9 in the appendix for reproduction. (using `eval_ltf.sh`.)
-3. (2025-05-29) I have added more explanation for training.
+3. (2025-05-28) I have added more explanation for training.
 
 ## Introduction
 This repo maintains the code for the paper. There are some other amazing repos involved and maintained in the `lmapf_lib` folder. 
@@ -29,11 +29,18 @@ moc.liamxof@rivers
 
 ## File Structures
 1. Configuration files are defined in the folder `expr_configs/paper_exps_v3`.
-2. Training logic is defined in the file `light_malib/framework/ppo_runner.py`.
-3. Rollout function (simulation) are defined in the file `light_malib/rollout/rollout_func_LMAPF.py`.
-4. Neural network models are defined in the folder `light_malib/model/LMAPF`.
-5. Pretrained weights are in the folder `pretrained_models`.
-6. The training logs are by default in the folder `logs`. Tensorboard can be used to monitor the training. The subfolder `agent_0` will contain the weight checkpoints.
+2. Map reader and generator are defined in the file `light_malib/envs/LMAPF/map.py`. The benchmark data in this paper is in the `lmapf_lib/data/papere_exp_v3` folder. They use the same data format as the competition [League of the Robot Runner 2023](https://github.com/MAPF-Competition/Benchmark-Archive/tree/main/2023%20Competition).
+3. Environment is defined in the file `light_malib/envs/LMAPF/env.py`.
+4. Training logic is defined in the file `light_malib/framework/ppo_runner.py`.
+5. Rollout function (simulation) are defined in the file `light_malib/rollout/rollout_func_LMAPF.py`.
+6. Neural network models are defined in the folder `light_malib/model/LMAPF`.
+7. Pretrained weights are in the folder `pretrained_models`.
+8. The training logs are by default in the folder `logs`. Tensorboard can be used to monitor the training. The subfolder `agent_0` will contain the weight checkpoints.
+9. There several important c++ wrappers for PIBT and Parallel LNS defined in the files `lmapf_lib/MAPFCompetition2023/tools/py_PIBT.cpp` and `lmapf_lib/MAPFCompetition2023/tools/py_PLNS.cpp`. Backward Dijkstraj heuristics are precomputed by the c++ wrapper defined in the file `lmapf_lib/MAPFCompetition2023/tools/py_compute_heuristics.cpp`. For example, in the environment class `LMAPFEnv`, you can see how they are loaded.
+
+## Evaluation
+See `eval.sh` for how to evaluate on the benchmark of this paper.
+See `eval_ltf.sh` for how to evaluate on the benchmark of the learn-to-follow paper.
 
 ## Training
 See `train.sh`. The training successfully starts for imiation learning if you see something similar to the following figure, which states that the algorithm starts to collecting training data.
@@ -62,12 +69,8 @@ Depending on the numbers of CPUs, GPUs and their memories: you may need to adjus
 
 For example, the default number in other configurations is for 4 GPUs and 64 vCPUs and if you want to use 1 GPUs and 16 vCPUs, you can divide the number of `rollout_manager.num_workers` and `training_manger.num_trainers` by 4. Since you probably don't want to wait for too long in the training because of the reduction in computational resources, you can divide other parameters mentioned above by 4. (CPU and GPU memories might also be the reason for reducing these parameters.)
 
-## Evaluation
-See `eval.sh` for how to evaluate on the benchmark of this paper.
-See `eval_ltf.sh` for how to evaluate on the benchmark of the learn-to-follow paper.
-
-## Benchmark
-The benchmark data in this paper is in the `lmapf_lib/data/papere_exp_v3` folder. They use the same data format as the competition [League of the Robot Runner 2023](https://github.com/MAPF-Competition/Benchmark-Archive/tree/main/2023%20Competition).
+### Generate New Problem Instances (Agent Starts and Task Locations) for a Map
+You can take a look at the last tens of lines in the file `light_malib/envs/LMAPF/map.py`. We use the same data format as the competition [League of the Robot Runner 2023](https://github.com/MAPF-Competition/Benchmark-Archive/tree/main/2023%20Competition).
 
 ## TODO
 1. recompile everything in an empty env to check the dependencies.
