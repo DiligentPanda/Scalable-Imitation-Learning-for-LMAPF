@@ -36,7 +36,7 @@ The implementation of Dynamic Guidance Version is more complex than the Static G
 
 ## File Structures
 1. Configuration files are defined in the folder `expr_configs/paper_exps_v3`.
-2. Map reader and generator are defined in the file `light_malib/envs/LMAPF/map.py`. The benchmark data in this paper is in the `lmapf_lib/data/papere_exp_v3` folder. They use the same data format as the competition [League of the Robot Runner 2023](https://github.com/MAPF-Competition/Benchmark-Archive/tree/main/2023%20Competition).
+2. Map reader and generator are defined in the file `light_malib/envs/LMAPF/map.py`. The benchmark data in this paper is in the `lmapf_lib/data/papere_exp_v3` folder. They use the same data format as the competition [League of the Robot Runner 2023](https://github.com/MAPF-Competition/Start-Kit/blob/main/Input_Output_Format.md).
 3. Environment is defined in the file `light_malib/envs/LMAPF/env.py`.
 4. Training logic is defined in the file `light_malib/framework/ppo_runner.py`.
 5. Rollout function (simulation) are defined in the file `light_malib/rollout/rollout_func_LMAPF.py`.
@@ -79,7 +79,7 @@ Depending on the numbers of CPUs, GPUs and their memories: you may need to adjus
 For example, the default number in other configurations is for 4 GPUs and 64 vCPUs and if you want to use 1 GPUs and 16 vCPUs, you can divide the number of `rollout_manager.num_workers` and `training_manger.num_trainers` by 4. Since you probably don't want to wait for too long in the training because of the reduction in computational resources, you can divide other parameters mentioned above by 4. (CPU and GPU memories might also be the reason for reducing these parameters.)
 
 ### Generate New Problem Instances (Agent Starts and Task Locations) for a Map
-You can take a look at the last tens of lines in the file `light_malib/envs/LMAPF/map.py`. We use the same data format as the competition [League of the Robot Runner 2023](https://github.com/MAPF-Competition/Benchmark-Archive/tree/main/2023%20Competition).
+You can take a look at the last tens of lines in the file `light_malib/envs/LMAPF/map.py`. We use the same data format as the competition [League of the Robot Runner 2023](https://github.com/MAPF-Competition/Start-Kit/blob/main/Input_Output_Format.md).
 
 ## TODO
 1. recompile everything in an empty env to check the dependencies.
