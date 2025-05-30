@@ -1,26 +1,11 @@
 # Deploying Ten Thousand Robots: Scalable Imitaion Learning for Lifelong Multi-Agent Path Finding
 
-## NEWS
-1. (2025-05-27) I have uploaded pretrained weights for static guidance on the benchmark of this paper. Please refer to the line 4 of the Table IV in the appendix for reproduction. (using `eval.sh`.)
-2. (2025-05-27) I have uploaded pretrained weights for Backward Dijkstra heuristics on the learn-to-follow benchmark. Please refer to the Figure 9 in the appendix for reproduction. (using `eval_ltf.sh`.)
-3. (2025-05-28) I have added more explanation for training.
+This repo maintains the code for the paper, which won the on the ICRA 2025 best paper on multi-robot systems and the best student paper.
 
-# Static Guidance Version
-Due to the complexity of the project, we maintain Backward Dijkstra, Static Guidance and Dynamic Guidance versions in separate branches. This branch is for Static Guidance versions. (The Backward Dijkstra version is almost the same as the Static Guidance version. We only need to set the `map_weights_path` to `""` in all the `expr_configs`.) 
-
-The implementation of Dynamic Guidance Version is more complex than the Static Guidance Version. So, try to run code in the `static_guidance` branch first.
-
-1. For reproduction results of Static Guidance on the main benchmark of this paper, please refer to the line 4 of the Table IV in the appendix. (using `eval.sh`.)
-
-2. For reproduction results of Backward Dijkstra on the main benchmark of this paper, please refer to the line 2 of the Table IV in the appendix.
-
-3. For reporduction results of Backward Dijkstra on the learn-to-follow benchmark. Please refer to the Figure 9 in the appendix. (using `eval_ltf.sh`.)
-
-## Quick Introduction
-This repo maintains the code for the paper. There are some other amazing repos involved and maintained in the `lmapf_lib` folder. 
+There are some other amazing repos involved and maintained in the `lmapf_lib` folder. 
 1. [Guided-PIBT](https://github.com/nobodyczcz/Guided-PIBT)
 2. [learn-to-follow](https://github.com/AIRI-Institute/learn-to-follow)
-3. [MAPFCompetition2023](https://github.com/DiligentPanda/MAPF-LRR2023): The Winning Solution of the League of Robot Runner Competition 2023. The League of Robot Runner Competition 2024 has a stronger winner: [EPIBT](https://github.com/Straple/LORR24), if you are interested in search-based approaches.
+3. [MAPFCompetition2023](https://github.com/DiligentPanda/MAPF-LRR2023): The Winning Solution of the League of Robot Runner Competition 2023. The League of Robot Runner Competition 2024 has a stronger winner: [EPIBT](https://github.com/Straple/LORR24), take a look at it if you are interested in search-based approaches.
 4. [RHCR](https://github.com/Jiaoyang-Li/RHCR)
 
 Examples for training and evaluation are provided as scripts below.  All training and evaluation heavily rely on experiment configs in the `expr_configs`. 
@@ -32,6 +17,17 @@ On the hand, the ideas conveyed by the paper are actually straightforward and it
 Please contact me (reverse:
 moc.liamxof@rivers
 ) if you have any questions.
+
+# Static Guidance Version
+Due to the complexity of the project, we maintain Backward Dijkstra, Static Guidance and Dynamic Guidance versions in separate branches (`static_guidance`,`dynamic_guidance`). This branch is for Static Guidance versions. (The Backward Dijkstra version is almost the same as the Static Guidance version. We only need to set the `map_weights_path` to `""` in all the `expr_configs`.) 
+
+The implementation of Dynamic Guidance Version is more complex than the Static Guidance Version. So, try to run code in the `static_guidance` branch first.
+
+1. For reproduction results of Static Guidance on the main benchmark of this paper, please refer to the line 4 of the Table IV in the appendix. (using `eval.sh`.)
+
+2. For reproduction results of Backward Dijkstra on the main benchmark of this paper, please refer to the line 2 of the Table IV in the appendix.
+
+3. For reporduction results of Backward Dijkstra on the learn-to-follow benchmark. Please refer to the Figure 9 in the appendix. (using `eval_ltf.sh`.)
 
 ## Install Libs & Compile PIBT and LNS
 ```
