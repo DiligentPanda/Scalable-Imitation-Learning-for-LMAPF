@@ -89,7 +89,7 @@ basic_info={
 
 
 timestamp = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-output_folder = os.path.join(output_folder, "eval/{}_{}_{}_{}".format(timestamp,exp_name,WPPL_mode,num_agents))
+output_folder = os.path.join(output_folder, "{}_{}_{}_{}".format(timestamp,exp_name,WPPL_mode,num_agents))
 log_folder = os.path.join(output_folder,"log")
 os.makedirs(log_folder, exist_ok=True)
 

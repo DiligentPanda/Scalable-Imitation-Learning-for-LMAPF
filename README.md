@@ -5,7 +5,18 @@
 2. (2025-05-27) I have uploaded pretrained weights for Backward Dijkstra heuristics on the learn-to-follow benchmark. Please refer to the Figure 9 in the appendix for reproduction. (using `eval_ltf.sh`.)
 3. (2025-05-28) I have added more explanation for training.
 
-## Introduction
+# Static Guidance Version
+Due to the complexity of the project, we maintain Backward Dijkstra, Static Guidance and Dynamic Guidance versions in separate branches. This branch is for Static Guidance versions. (The Backward Dijkstra version is almost the same as the Static Guidance version. We only need to set the `map_weights_path` to `""` in all the `expr_configs`.) 
+
+The implementation of Dynamic Guidance Version is more complex than the Static Guidance Version. So, try to run code in the `static_guidance` branch first.
+
+1. For reproduction results of Static Guidance on the main benchmark of this paper, please refer to the line 4 of the Table IV in the appendix. (using `eval.sh`.)
+
+2. For reproduction results of Backward Dijkstra on the main benchmark of this paper, please refer to the line 2 of the Table IV in the appendix.
+
+3. For reporduction results of Backward Dijkstra on the learn-to-follow benchmark. Please refer to the Figure 9 in the appendix. (using `eval_ltf.sh`.)
+
+## Quick Introduction
 This repo maintains the code for the paper. There are some other amazing repos involved and maintained in the `lmapf_lib` folder. 
 1. [Guided-PIBT](https://github.com/nobodyczcz/Guided-PIBT)
 2. [learn-to-follow](https://github.com/AIRI-Institute/learn-to-follow)
@@ -36,7 +47,7 @@ moc.liamxof@rivers
 6. Neural network models are defined in the folder `light_malib/model/LMAPF`.
 7. Pretrained weights are in the folder `pretrained_models`.
 8. The training logs are by default in the folder `logs`. Tensorboard can be used to monitor the training. The subfolder `agent_0` will contain the weight checkpoints.
-9. There several important c++ wrappers for PIBT and Parallel LNS defined in the files `lmapf_lib/MAPFCompetition2023/tools/py_PIBT.cpp` and `lmapf_lib/MAPFCompetition2023/tools/py_PLNS.cpp`. Backward Dijkstraj heuristics are precomputed by the c++ wrapper defined in the file `lmapf_lib/MAPFCompetition2023/tools/py_compute_heuristics.cpp`. For example, in the environment class `LMAPFEnv`, you can see how they are loaded.
+9. There are several important c++ wrappers for `PIBT` and `Parallel LNS` defined in the files `lmapf_lib/MAPFCompetition2023/tools/py_PIBT.cpp` and `lmapf_lib/MAPFCompetition2023/tools/py_PLNS.cpp`. Backward Dijkstraj heuristics are precomputed by the c++ wrapper defined in the file `lmapf_lib/MAPFCompetition2023/tools/py_compute_heuristics.cpp`. For example, in the environment class `LMAPFEnv`, you can see how they are loaded.
 
 ## Evaluation
 See `eval.sh` for how to evaluate on the benchmark of this paper.
@@ -59,7 +70,9 @@ Depending on the numbers of CPUs, GPUs and their memories: you may need to adjus
 1. framework
     1. max_dagger_iterations
     2. num_episodes_per_iter
-2. rollout_manager:
+2. evaluation_manager:
+    1. num_eval_rollouts
+3. rollout_manager:g
     1. num_workers: the number of works to collect data. must < the total number of cpus. because some other cpus are used for other processes according to the design of the distributed computation framework, Ray.
     2. batch_size
     3. eval_batch_size
@@ -74,10 +87,5 @@ You can take a look at the last tens of lines in the file `light_malib/envs/LMAP
 
 ## TODO
 1. recompile everything in an empty env to check the dependencies.
-2. upload pretrained model weights.
-3. add reproduction scripts.
-4. add documentation.
-5. organize/re-write code.
-    1. remove redundant code.
-6. add scripts to make it easier to generate benchmark for new maps.
-7. add the TrafficFlow version.
+2. add more documentation.
+3. organize/re-write code.

@@ -1,5 +1,5 @@
 # The results of evaluation will appear in the folder,
-# main_reeval_weighted/v3/IL/warehouse/best/eval, for example.
+# exp/eval/.., for example.
 # you can take a look at the summaries.json for the mean throughput and inference step time.
 
 ## NOTE: For Backward Dijkstra or Static Guidance, the code will precompute the shortest path distances before evaluation.
@@ -8,6 +8,8 @@
 
 ## NOTE: The evaluation on the large maps takes a while. Please be patient.
 
+# the root folder for output
+OUTPUT_FOLDER=exp/eval
 # the root folder for pretrained weights
 # IL is trained with our Scalable Imitation Algorithm
 # RL is trained with MAPPO
@@ -26,6 +28,7 @@ NUM_DEVICE=1
 ## It means that the start and goal locations are not generated uniformaly but 
 ## by rules in the League of Robot Runner 2023 Competition.
 python evaluate.py \
+ --output_folder ${OUTPUT_FOLDER} \
  --exp_name sortation_small_uniform \
  --model_path ${MODEL_FOLDER}/sortation/best \
  --WPPL_mode ${WPPL_mode} \
@@ -38,6 +41,7 @@ python evaluate.py \
 # ## It means that the start and goal locations are not generated uniformaly but 
 # ## by rules in the League of Robot Runner 2023 Competition.
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name warehouse_small_uniform \
 #  --model_path ${MODEL_FOLDER}/warehouse/best \
 #  --WPPL_mode ${WPPL_mode} \
@@ -47,6 +51,7 @@ python evaluate.py \
 #  --num_device ${NUM_DEVICE}
 
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name paris_small \
 #  --model_path ${MODEL_FOLDER}/paris/best \
 #  --WPPL_mode ${WPPL_mode} \
@@ -56,6 +61,7 @@ python evaluate.py \
 #  --num_device ${NUM_DEVICE}
 
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name berlin_small \
 #  --model_path ${MODEL_FOLDER}/berlin/best \
 #  --WPPL_mode ${WPPL_mode} \
@@ -65,6 +71,7 @@ python evaluate.py \
 #  --num_device ${NUM_DEVICE}
 
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name random_256_10_small \
 #  --model_path ${MODEL_FOLDER}/random_256_10/best \
 #  --WPPL_mode ${WPPL_mode} \
@@ -74,6 +81,7 @@ python evaluate.py \
 #  --num_device ${NUM_DEVICE}
 
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name random_256_20_small \
 #  --model_path ${MODEL_FOLDER}/random_256_20/best \
 #  --WPPL_mode ${WPPL_mode} \
@@ -88,6 +96,7 @@ python evaluate.py \
 # # It means that the start and goal locations are not generated uniformaly but 
 # # by rules in the League of Robot Runner 2023 Competition.
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name sortation_large_uniform \
 #  --model_path ${MODEL_FOLDER}/sortation/best \
 #  --WPPL_mode ${WPPL_mode} \
@@ -100,6 +109,7 @@ python evaluate.py \
 # ## It means that the start and goal locations are not generated uniformaly but 
 # ## by rules in the League of Robot Runner 2023 Competition.
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name warehouse_large_uniform \
 #  --model_path ${MODEL_FOLDER}/warehouse/best \
 #  --WPPL_mode ${WPPL_mode} \
@@ -109,6 +119,7 @@ python evaluate.py \
 #  --num_device ${NUM_DEVICE}
 
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name paris_large \
 #  --model_path ${MODEL_FOLDER}/paris/best \
 #  --WPPL_mode ${WPPL_mode} \
@@ -118,6 +129,7 @@ python evaluate.py \
 #  --num_device ${NUM_DEVICE}
 
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name berlin_large \
 #  --model_path ${MODEL_FOLDER}/berlin/best \
 #  --WPPL_mode ${WPPL_mode} \
@@ -127,6 +139,7 @@ python evaluate.py \
 #  --num_device ${NUM_DEVICE}
 
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name random_256_10_large \
 #  --model_path ${MODEL_FOLDER}/random_256_10/best \
 #  --WPPL_mode ${WPPL_mode} \
@@ -136,6 +149,7 @@ python evaluate.py \
 #  --num_device ${NUM_DEVICE}
 
 # python evaluate.py \
+#  --output_folder ${OUTPUT_FOLDER} \
 #  --exp_name random_256_20_large \
 #  --model_path ${MODEL_FOLDER}/random_256_20/best \
 #  --WPPL_mode ${WPPL_mode} \
