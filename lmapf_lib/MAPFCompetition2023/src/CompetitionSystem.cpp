@@ -7,7 +7,6 @@
 #include "util/Timer.h"
 #include "util/Analyzer.h"
 #include "util/MyLogger.h"
-#include <filesystem>
 
 using json = nlohmann::ordered_json;
 
@@ -1068,9 +1067,10 @@ void BaseSystem::simulate(int simulation_time)
 {
     //init logger
     //Logger* log = new Logger();
-    initialize();
 
-    g_timer.record_p("simulate_start");
+    ONLYDEV(g_timer.record_p("simulate_start");)
+
+    initialize();
 
     ONLYDEV(g_timer.record_d("simulate_start","initialize_end","initialization");)
     int num_of_tasks = 0;
@@ -1163,7 +1163,7 @@ void BaseSystem::simulate(int simulation_time)
 
         ONLYDEV(g_timer.print_all_d(););
     }
-    g_timer.record_d("simulate_start","simulate_end","simulation");
+    ONLYDEV(g_timer.record_d("initialize_end","simulate_end","simulation");)
 
     ONLYDEV(g_timer.print_all_d();)
 
@@ -1257,9 +1257,6 @@ void BaseSystem::savePaths(const string &fileName, int option) const
 void BaseSystem::saveResults(const string &fileName, int screen) const
 {
     json js;
-
-    js["runtime"] = g_timer.get_d("simulation");
-
     // Save action model
     js["actionModel"] = "MAPF_T";
 
@@ -1466,10 +1463,6 @@ void BaseSystem::saveResults(const string &fileName, int screen) const
     
     }
 
-    std::filesystem::path path(fileName);
-    auto dir = path.parent_path();
-    // std::string file = path.filename().string();
-    std::filesystem::create_directories(dir);
     std::ofstream f(fileName,std::ios_base::trunc |std::ios_base::out);
     f << std::setw(4) << js;
 

@@ -69,12 +69,12 @@ class Map:
         self.only_keep_the_main_connected_component()
         
         
-    def generate_task_files(self, num, fp, seed=None):
+    def generate_task_files(self, num, fp, uniform=False, seed=None):
         if seed is None:
             import time
             seed=int(time.time())
         np.random.seed(seed)
-        if len(self.s_locations)+len(self.e_locations)>0:
+        if len(self.s_locations)+len(self.e_locations)>0 and not uniform:
             s_locations=self.s_locations[:,0]*self.width+self.s_locations[:,1]
             e_locations=self.e_locations[:,0]*self.width+self.e_locations[:,1]
             prob=np.random.uniform(0,1,size=num)
@@ -176,33 +176,6 @@ class Map:
                     
         return ctr
     
-    def generate_random_map(self, ofp, h, w, obstacle_prob, seed=None):
-        if seed is None:
-            import time
-            seed=int(time.time())
-        np.random.seed(seed)
-        self.graph = (np.random.rand(h,w)<obstacle_prob).astype(int)
-        self.height=h
-        self.width=w
-        
-        self.only_keep_the_main_connected_component()
-    
-        self.write_graph(ofp, self.graph)
-    
-    def write_graph(self, ofp, graph):
-        with open(ofp,'w') as f:
-            f.write("type octile\n")
-            f.write("height "+str(graph.shape[0])+"\n")
-            f.write("width "+str(graph.shape[1])+"\n")
-            f.write("map\n")
-            map=""
-            height,width=graph.shape
-            for i in range(height):
-                for j in range(width):
-                    map+="@" if graph[i,j] else '.'
-                map+="\n"
-            f.write(map)
-    
     def print_graph(self,graph:np.ndarray=None):
         if graph is None:
             graph=self.graph     
@@ -221,7 +194,18 @@ class Map:
         scale_w = new_w/self.width
         graph = ndimage.zoom(self.graph, (scale_h, scale_w), order=0)
         
-        self.write_graph(ofp, graph)
+        with open(ofp,'w') as f:
+            f.write("type octile\n")
+            f.write("height "+str(new_h)+"\n")
+            f.write("width "+str(new_w)+"\n")
+            f.write("map\n")
+            map=""
+            height,width=graph.shape
+            for i in range(height):
+                for j in range(width):
+                    map+="@" if graph[i,j] else '.'
+                map+="\n"
+            f.write(map)
         
 class MapManager:
     def __init__(self, map_filter_keep=None, map_filter_remove=None):
@@ -341,47 +325,45 @@ if __name__=="__main__":
     import json
     
     map_names= [
-        # "den_520d",
-        # "warehouse_large",
-        # "sortation_large",
-        # "Paris_1_256",
-        # "Berlin_1_256",
-        # "Boston_0_256",
-        "random_256_10_small",
-        "random_256_20_small"
+    # "den_520d_small",
+    "warehouse_large",
+    "sortation_large",
+    # "Paris_1_256_small",
+    # "Berlin_1_256_small"
     ]
     task_num=200000
     agent_nums=[
-        # 6000,
+        #600,
         # 8000,
-        # 10000,
+        10000,
         # 12000
-        600
     ]
+    uniform=True
     
     for map_name in map_names:
-        map_fp=f"/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/small/{map_name}.map"
+        map_fp=f"/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/large/{map_name}.map"
         map=Map(map_fp)
         map.print_graph(map.graph)
         print(len(np.nonzero(map.graph==0)[0]))
         
-        task_folder=f"/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/tasks/{map_name}"
-        agent_folder=f"/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/agents/{map_name}"
-        config_folder=f"/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/configs/{map_name}"
+        task_folder=f"/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/tasks/{map_name}_uniform"
+        agent_folder=f"/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/agents/{map_name}_uniform"
+        config_folder=f"/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/configs/{map_name}_uniform"
         os.makedirs(task_folder, exist_ok=True)
         os.makedirs(agent_folder, exist_ok=True)
         os.makedirs(config_folder, exist_ok=True)
     
         for idx in range(25):
-            task_fp=f"{task_folder}/{map_name}_{idx}.tasks"
+            task_fp=f"{task_folder}/{map_name}_uniform_{idx}.tasks"
             map.generate_task_files(
                 task_num,
                 task_fp,
-                seed=idx*1997+1234
+                seed=idx*1997+1234,
+                uniform=True
             )
             
             for jdx, agent_num in enumerate(agent_nums):
-                agent_fp=f"{agent_folder}/{map_name}_{idx}_{agent_num}.agents"
+                agent_fp=f"{agent_folder}/{map_name}_uniform_{idx}_{agent_num}.agents"
                 map.generate_agent_files(
                     agent_num,
                     agent_fp,
@@ -390,14 +372,14 @@ if __name__=="__main__":
                 
                 config = {
                     "mapFile": f"../../small/{map_name}.map",
-                    "agentFile": f"../../agents/{map_name}/{map_name}_{idx}_{agent_num}.agents",
+                    "agentFile": f"../../agents/{map_name}/{map_name}_uniform_{idx}_{agent_num}.agents",
                     "teamSize": agent_num,
-                    "taskFile": f"../../tasks/{map_name}/{map_name}_{idx}.tasks",
+                    "taskFile": f"../../tasks/{map_name}/{map_name}_uniform_{idx}.tasks",
                     "numTasksReveal": 1,
                     "taskAssignmentStrategy": "roundrobin"
                 }
                         
-                config_fp = f"{config_folder}/{map_name}_{idx}_{agent_num}.json"
+                config_fp = f"{config_folder}/{map_name}_uniform_{idx}_{agent_num}.json"
                 
                 with open(config_fp,'w') as f:
                     json.dump(config, f)
@@ -408,17 +390,4 @@ if __name__=="__main__":
     # ofp="/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/small/Berlin_1_256_small.map"
     # graph=m.zoom_save(ofp, 64, 64)
     # m.print_graph(graph)
-    
-    # m=Map()
-    # # m.generate_random_map("/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/large/random_256_10.map", 256, 256, 0.1, seed=0)
-    
-    # m=Map("/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/small/random_256_10_small.map")
-    # # m.zoom_save("/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/small/random_256_10_small.map", 64, 64)    
-    # print(len(np.nonzero(m.graph==0)[0]))
-    
-    # m=Map()
-    # # m.generate_random_map("/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/large/random_256_20.map", 256, 256, 0.2, seed=0)
-    
-    # m=Map("/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/small/Berlin_1_256_small.map")
-    # # m.zoom_save("/root/GRF_MARL/lmapf_lib/data/paper_exp_v3/small/random_256_20_small.map", 64, 64)     
-    # print(len(np.nonzero(m.graph==0)[0]))    
+        

@@ -217,5 +217,8 @@ class Table:
                         self.write_num / self.timer.time("write_start") * 60
                     )
                 return ret
-            except:
+            except Exception as e:
+                Logger.error("table get statistic error: {}".format(e))
+                import traceback
+                Logger.error(traceback.format_exc())
                 return {}

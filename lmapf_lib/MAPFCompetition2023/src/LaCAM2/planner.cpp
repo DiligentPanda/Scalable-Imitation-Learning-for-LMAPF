@@ -66,11 +66,11 @@ HNode::HNode(const Config& _C, const std::shared_ptr<HeuristicTable> & HT, Insta
   // update neighbor
   if (parent != nullptr) parent->neighbor.insert(this);
 
-  // for (int aid=0;aid<N;++aid) {
-  //   if ((disable_agent_goals && ins->agent_infos[aid].disabled)) {
-  //     ins->goals.locs[aid]=C.locs[aid];
-  //   }
-  // }
+  for (int aid=0;aid<N;++aid) {
+    if ((disable_agent_goals && ins->agent_infos[aid].disabled)) {
+      ins->goals.locs[aid]=C.locs[aid];
+    }
+  }
 
   std::vector<std::tuple<bool,bool,bool,float,float,float,int> > scores;
   for (int i=0;i<N;++i) {
@@ -356,7 +356,7 @@ Solution Planner::solve(std::string& additional_info, int order_strategy)
     //   continue;
     // }
 
-#ifndef NO_ROT
+    
       // we need map no rotation action to rotation action here and create the new configuration for the next step.
       std::vector<::State> curr_states;
       std::vector<::State> planned_next_states;
@@ -393,14 +393,6 @@ Solution Planner::solve(std::string& additional_info, int order_strategy)
       }
 
     }
-#else 
-    for (int i=0;i<N;++i) {
-        C_new.locs[i] = A[i]->v_next;
-        C_new.orients[i] = H->C.orients[i];
-        C_new.arrivals[i] = H->C.arrivals[i] | (A[i]->v_next->index==ins->goals.locs[i]->index);
-    }
-#endif
-
 
     // check explored list
     const auto iter = EXPLORED.find(C_new);

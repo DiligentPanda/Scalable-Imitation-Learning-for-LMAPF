@@ -190,7 +190,8 @@ class MAPPOLoss(LossFunc):
         step_optimizer:bool=True,
         grad_accum_steps:int =1
     ):
-        if self.sub_algorithm_name in ["BC","Dagger"]:
+        guiding_actions_batch=sample.get(EpisodeKey.GUIDING_ACTION, None)
+        if guiding_actions_batch is not None:
             (
                 state_batch,
                 obs_batch,
@@ -201,7 +202,7 @@ class MAPPOLoss(LossFunc):
                 actor_rnn_states_batch,
                 critic_rnn_states_batch,
                 dones_batch,
-                guiding_actions_batch
+                # guiding_actions_batch
             ) = (
                 sample[EpisodeKey.CUR_STATE],
                 sample[EpisodeKey.CUR_OBS],
@@ -212,10 +213,10 @@ class MAPPOLoss(LossFunc):
                 sample[EpisodeKey.ACTOR_RNN_STATE],
                 sample[EpisodeKey.CRITIC_RNN_STATE],
                 sample[EpisodeKey.DONE],
-                sample.get(EpisodeKey.GUIDING_ACTION, None)
+                # sample.get(EpisodeKey.GUIDING_ACTION, None)
             )
             
-            assert guiding_actions_batch is not None
+            # assert guiding_actions_batch is not None
             
             guiding_actions_batch = guiding_actions_batch.long()
             

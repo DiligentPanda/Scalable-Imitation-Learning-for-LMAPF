@@ -393,21 +393,17 @@ void LNSSolver::observe(const SharedEnvironment & env){
             }
             if (execution_paths[i][executed_step+1].location!=env.curr_states[i].location || execution_paths[i][executed_step+1].orientation!=env.curr_states[i].orientation){
                 match=false;
-                std::cout<<"agent "<<i<<"'s current state doesn't match with the executed plan in observe"<<std::endl;
-                std::cout<<"current state: "<<env.curr_states[i].location<<" "<<env.curr_states[i].orientation<<std::endl;
-                std::cout<<"plan state: "<<execution_paths[i][executed_step+1].location<<" "<<execution_paths[i][executed_step+1].orientation<<std::endl;
             }
         }
         // otherwise, the previous execution is delayed.
         if (match){
             ++executed_step;
-        } else {
-            std::cout<<"not matched"<<std::endl;
         }
     }
 
     // if run out of execution instructions, we need to copy new ones into execution_paths
     if (executed_step==execution_paths[0].size()-1){
+        // std::cerr<<"need new execution paths"<<std::endl;
         need_new_execution_paths=true;
     } else {
         need_new_execution_paths=false;
@@ -488,16 +484,6 @@ void LNSSolver::get_step_actions(const SharedEnvironment & env, vector<Action> &
                 cerr<<"agent "<<i<<"'s current state doesn't match with the executed plan in get_step_actions"<<endl;
                 cerr<<"current state: "<<env.curr_states[i].location<<" "<<env.curr_states[i].orientation<<endl;
                 cerr<<"plan state: "<<execution_paths[i][executed_step].location<<" "<<execution_paths[i][executed_step].orientation<<endl;
-
-
-                cerr<<"execution paths for agent "<<i<<std::endl;
-                for (int j=0;j<execution_paths[i].size();++j){
-                    cerr<<execution_paths[i][j].location<<" ";
-                }
-                cerr<<endl;
-
-                cerr<<"execution step"<<executed_step<<endl;
-
                 exit(-1);
             }
 

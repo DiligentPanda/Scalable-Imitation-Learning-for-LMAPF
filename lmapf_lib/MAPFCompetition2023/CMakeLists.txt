@@ -125,8 +125,6 @@ target_link_libraries(py_compute_heuristics PRIVATE spdlog::spdlog)
 
 pybind11_add_module(py_PIBT "tools/py_PIBT.cpp")
 
-pybind11_add_module(py_STOP "tools/py_STOP.cpp")
-
 pybind11_add_module(py_PLNS ${SOURCES} "tools/py_PLNS.cpp")
 target_link_libraries(py_PLNS PRIVATE ${Boost_LIBRARIES})
 target_link_libraries(py_PLNS PRIVATE OpenMP::OpenMP_CXX)

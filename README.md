@@ -18,16 +18,12 @@ Please contact me (reverse:
 moc.liamxof@rivers
 ) if you have any questions.
 
-# Static Guidance Version
-Due to the complexity of the project, we maintain Backward Dijkstra, Static Guidance and Dynamic Guidance versions in separate branches (`static_guidance`,`dynamic_guidance`). This branch is for Static Guidance versions. (The Backward Dijkstra version is almost the same as the Static Guidance version. We only need to set the `map_weights_path` to `""` in all the `expr_configs`.) 
+# Dynamic Guidance Version
+Due to the complexity of the project, we maintain Backward Dijkstra, Static Guidance and Dynamic Guidance versions in separate branches (`static_guidance`,`dynamic_guidance`). This branch is for Dynamic Guidance versions. 
 
 The implementation of Dynamic Guidance Version is more complex than the Static Guidance Version. So, try to run code in the `static_guidance` branch first.
 
-1. For reproduction results of Static Guidance on the main benchmark of this paper, please refer to the line 4 of the Table IV in the appendix. (using `eval.sh`.)
-
-2. For reproduction results of Backward Dijkstra on the main benchmark of this paper, please refer to the line 2 of the Table IV in the appendix.
-
-3. For reporduction results of Backward Dijkstra on the learn-to-follow benchmark. Please refer to the Figure 9 in the appendix. (using `eval_ltf.sh`.)
+1. For reproduction results of Dynamic Guidance on the main benchmark of this paper, please refer to the line 6 of the Table IV in the appendix. (using `eval.sh`.)
 
 ## Install Libs & Compile PIBT and LNS
 ```
@@ -35,7 +31,7 @@ The implementation of Dynamic Guidance Version is more complex than the Static G
 ```
 
 ## File Structures
-1. Configuration files are defined in the folder `expr_configs/paper_exps_v3`.
+1. Configuration files are defined in the folder `expr_configs/paper_exps_v4`.
 2. Map reader and generator are defined in the file `light_malib/envs/LMAPF/map.py`. The benchmark data in this paper is in the `lmapf_lib/data/papere_exp_v3` folder. They use the same data format as the competition [League of the Robot Runner 2023](https://github.com/MAPF-Competition/Benchmark-Archive/tree/main/2023%20Competition).
 3. Environment is defined in the file `light_malib/envs/LMAPF/env.py`.
 4. Training logic is defined in the file `light_malib/framework/ppo_runner.py`.
@@ -43,7 +39,10 @@ The implementation of Dynamic Guidance Version is more complex than the Static G
 6. Neural network models are defined in the folder `light_malib/model/LMAPF`.
 7. Pretrained weights are in the folder `pretrained_models`.
 8. The training logs are by default in the folder `logs`. Tensorboard can be used to monitor the training. The subfolder `agent_0` will contain the weight checkpoints.
-9. There are several important c++ wrappers for `PIBT` and `Parallel LNS` defined in the files `lmapf_lib/MAPFCompetition2023/tools/py_PIBT.cpp` and `lmapf_lib/MAPFCompetition2023/tools/py_PLNS.cpp`. Backward Dijkstraj heuristics are precomputed by the c++ wrapper defined in the file `lmapf_lib/MAPFCompetition2023/tools/py_compute_heuristics.cpp`. For example, in the environment class `LMAPFEnv`, you can see how they are loaded.
+9. There several important c++ wrappers for `PIBT` and `Parallel LNS+TrafficFlow` defined in the files `lmapf_lib/MAPFCompetition2023/tools/py_PIBT.cpp` and `lmapf_lib/Guided-PIBT/guided-pibt/src/PyShadowSystem.cpp`. For example, in the environment class `LMAPFEnv`, you can see how they are loaded. `PyShadowSystem` is basically a wrapper for the whole `Guided-PIBT` project with the following main functionalities:
+    1. It is a c++ MAPF environement simulates exactly the same as the python MAPFenvironment. That is why it is call Shadow System. (see `sync()`.)
+    2. We can query the heuristic for every location in each agent's local view. (see `query_heuristics()`.)
+    3. We can ask for an solution improved by Parallel LNS based on the given initial solution. (see `query_lns_actions()`.)
 
 ## Evaluation
 See `eval.sh` for how to evaluate on the benchmark of this paper.
@@ -68,7 +67,7 @@ Depending on the numbers of CPUs, GPUs and their memories: you may need to adjus
     2. num_episodes_per_iter
 2. evaluation_manager:
     1. num_eval_rollouts
-3. rollout_manager:g
+3. rollout_manager:
     1. num_workers: the number of works to collect data. must < the total number of cpus. because some other cpus are used for other processes according to the design of the distributed computation framework, Ray.
     2. batch_size
     3. eval_batch_size

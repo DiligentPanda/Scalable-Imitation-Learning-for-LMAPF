@@ -1,0 +1,266 @@
+[
+    {
+        "results": [
+            {
+                "main_agent_id": "agent_0",
+                "policy_ids": {
+                    "agent_0": "policy_0"
+                },
+                "map_name": "random_256_10_small",
+                "num_robots": 600,
+                "stats": {
+                    "agent_0": {
+                        "reward": 0.0,
+                        "throughput": 10.944000244140625,
+                        "valid_rate": 0.999999999998,
+                        "2_individual_reward": 0.0,
+                        "3_team_reward": 0.0,
+                        "4_guiding_reward": 0,
+                        "6_R": 0.0,
+                        "8_D": 0.0,
+                        "10_L": 0.0,
+                        "12_U": 0.0,
+                        "14_W": 0.0,
+                        "21_consistent_rate": 0.0,
+                        "22_steps": 500
+                    }
+                }
+            }
+        ],
+        "idx": 0,
+        "seed": 0,
+        "mean_step_time": 0.041314281800000005,
+        "prepare_time": 0.22025146
+    },
+    {
+        "results": [
+            {
+                "main_agent_id": "agent_0",
+                "policy_ids": {
+                    "agent_0": "policy_0"
+                },
+                "map_name": "random_256_10_small",
+                "num_robots": 600,
+                "stats": {
+                    "agent_0": {
+                        "reward": 0.0,
+                        "throughput": 11.112000465393066,
+                        "valid_rate": 0.999999999998,
+                        "2_individual_reward": 0.0,
+                        "3_team_reward": 0.0,
+                        "4_guiding_reward": 0,
+                        "6_R": 0.0,
+                        "8_D": 0.0,
+                        "10_L": 0.0,
+                        "12_U": 0.0,
+                        "14_W": 0.0,
+                        "21_consistent_rate": 0.0,
+                        "22_steps": 500
+                    }
+                }
+            }
+        ],
+        "idx": 1,
+        "seed": 0,
+        "mean_step_time": 0.03694478522,
+        "prepare_time": 0.180302195
+    },
+    {
+        "results": [
+            {
+                "main_agent_id": "agent_0",
+                "policy_ids": {
+                    "agent_0": "policy_0"
+                },
+                "map_name": "random_256_10_small",
+                "num_robots": 600,
+                "stats": {
+                    "agent_0": {
+                        "reward": 0.0,
+                        "throughput": 11.272000312805176,
+                        "valid_rate": 0.999999999998,
+                        "2_individual_reward": 0.0,
+                        "3_team_reward": 0.0,
+                        "4_guiding_reward": 0,
+                        "6_R": 0.0,
+                        "8_D": 0.0,
+                        "10_L": 0.0,
+                        "12_U": 0.0,
+                        "14_W": 0.0,
+                        "21_consistent_rate": 0.0,
+                        "22_steps": 500
+                    }
+                }
+            }
+        ],
+        "idx": 2,
+        "seed": 0,
+        "mean_step_time": 0.03595953796666666,
+        "prepare_time": 0.18712774666666668
+    },
+    {
+        "results": [
+            {
+                "main_agent_id": "agent_0",
+                "policy_ids": {
+                    "agent_0": "policy_0"
+                },
+                "map_name": "random_256_10_small",
+                "num_robots": 600,
+                "stats": {
+                    "agent_0": {
+                        "reward": 0.0,
+                        "throughput": 11.124000549316406,
+                        "valid_rate": 0.999999999998,
+                        "2_individual_reward": 0.0,
+                        "3_team_reward": 0.0,
+                        "4_guiding_reward": 0,
+                        "6_R": 0.0,
+                        "8_D": 0.0,
+                        "10_L": 0.0,
+                        "12_U": 0.0,
+                        "14_W": 0.0,
+                        "21_consistent_rate": 0.0,
+                        "22_steps": 500
+                    }
+                }
+            }
+        ],
+        "idx": 3,
+        "seed": 0,
+        "mean_step_time": 0.035711719475,
+        "prepare_time": 0.19714785
+    },
+    {
+        "results": [
+            {
+                "main_agent_id": "agent_0",
+                "policy_ids": {
+                    "agent_0": "policy_0"
+                },
+                "map_name": "random_256_10_small",
+                "num_robots": 600,
+                "stats": {
+                    "agent_0": {
+                        "reward": 0.0,
+                        "throughput": 11.156000137329102,
+                        "valid_rate": 0.999999999998,
+                        "2_individual_reward": 0.0,
+                        "3_team_reward": 0.0,
+                        "4_guiding_reward": 0,
+                        "6_R": 0.0,
+                        "8_D": 0.0,
+                        "10_L": 0.0,
+                        "12_U": 0.0,
+                        "14_W": 0.0,
+                        "21_consistent_rate": 0.0,
+                        "22_steps": 500
+                    }
+                }
+            }
+        ],
+        "idx": 4,
+        "seed": 0,
+        "mean_step_time": 0.034896998508,
+        "prepare_time": 0.18585593400000003
+    },
+    {
+        "results": [
+            {
+                "main_agent_id": "agent_0",
+                "policy_ids": {
+                    "agent_0": "policy_0"
+                },
+                "map_name": "random_256_10_small",
+                "num_robots": 600,
+                "stats": {
+                    "agent_0": {
+                        "reward": 0.0,
+                        "throughput": 11.204000473022461,
+                        "valid_rate": 0.999999999998,
+                        "2_individual_reward": 0.0,
+                        "3_team_reward": 0.0,
+                        "4_guiding_reward": 0,
+                        "6_R": 0.0,
+                        "8_D": 0.0,
+                        "10_L": 0.0,
+                        "12_U": 0.0,
+                        "14_W": 0.0,
+                        "21_consistent_rate": 0.0,
+                        "22_steps": 500
+                    }
+                }
+            }
+        ],
+        "idx": 5,
+        "seed": 0,
+        "mean_step_time": 0.03420545366666666,
+        "prepare_time": 0.1781475516666667
+    },
+    {
+        "results": [
+            {
+                "main_agent_id": "agent_0",
+                "policy_ids": {
+                    "agent_0": "policy_0"
+                },
+                "map_name": "random_256_10_small",
+                "num_robots": 600,
+                "stats": {
+                    "agent_0": {
+                        "reward": 0.0,
+                        "throughput": 11.0600004196167,
+                        "valid_rate": 0.999999999998,
+                        "2_individual_reward": 0.0,
+                        "3_team_reward": 0.0,
+                        "4_guiding_reward": 0,
+                        "6_R": 0.0,
+                        "8_D": 0.0,
+                        "10_L": 0.0,
+                        "12_U": 0.0,
+                        "14_W": 0.0,
+                        "21_consistent_rate": 0.0,
+                        "22_steps": 500
+                    }
+                }
+            }
+        ],
+        "idx": 6,
+        "seed": 0,
+        "mean_step_time": 0.033742275868571425,
+        "prepare_time": 0.17207876285714288
+    },
+    {
+        "results": [
+            {
+                "main_agent_id": "agent_0",
+                "policy_ids": {
+                    "agent_0": "policy_0"
+                },
+                "map_name": "random_256_10_small",
+                "num_robots": 600,
+                "stats": {
+                    "agent_0": {
+                        "reward": 0.0,
+                        "throughput": 11.290000915527344,
+                        "valid_rate": 0.999999999998,
+                        "2_individual_reward": 0.0,
+                        "3_team_reward": 0.0,
+                        "4_guiding_reward": 0,
+                        "6_R": 0.0,
+                        "8_D": 0.0,
+                        "10_L": 0.0,
+                        "12_U": 0.0,
+                        "14_W": 0.0,
+                        "21_consistent_rate": 0.0,
+                        "22_steps": 500
+                    }
+                }
+            }
+        ],
+        "idx": 7,
+        "seed": 0,
+        "mean_step_time": 0.0334216568875,
+        "prepare_time": 0.16857765625
+    }
+]

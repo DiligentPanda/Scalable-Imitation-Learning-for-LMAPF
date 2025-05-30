@@ -384,39 +384,54 @@ class RolloutManager:
                 Logger.info("Rollout {}, Global Step {}".format(rollout_epoch,self.get_global_step(rollout_epoch)))
 
                 global_timer.record("batch_start")
-                results, timer_results = self.get_batch(
+                rollout_results = self.get_batch(
                     self.data_buffer,
                     self.data_buffer_lock,
                     self.data_buffer_ready,
                     self.batch_size,
                 )
                 global_timer.time("batch_start", "batch_end", "batch")
-                timer_results.update(global_timer.elapses)
-                global_timer.clear()
-
+                
+                # originally it is generator, but I want to access it twice.
+                rollout_results=list(rollout_results)
+                
+                # detect empty
+                # TODO(rivers): not sure, could have bugs. if fail please fallback to the previous version.
+                if sum([len(rollout_result["results"]) for rollout_result in rollout_results])!=0:
+                    results, timer_results = self.reduce_rollout_results(rollout_results)
+                    timer_results.update(global_timer.elapses)
+                    self.rollout_metrics.update(results)
+                    global_timer.clear()
+                    Logger.info(
+                        "Rollout {}: Global Step {}, average {}".format(
+                            rollout_epoch, self.get_global_step(rollout_epoch), {key:results[key] for key in self.rollout_metrics.get_keys()}
+                        )
+                    )
+                    self.log_to_tensorboard(results,timer_results,rollout_epoch=rollout_epoch,main_tag="Rollout")
+    
+                    # save best stable model
+                    # rollout_metrics_mean = self.rollout_metrics.get_means()
+                    # reward = rollout_metrics_mean["throughput"]
+                    
+                    reward = results["throughput"]
+                    print("here",reward,best_reward)
+                    if reward >= best_reward:
+                        Logger.warning(
+                            "save the best model(average throughput: {})".format(reward)
+                        )
+                        best_reward = reward
+                        self.push_best_model_to_policy_server(rollout_epoch)
+                    
                 # Logger.info(
                 #     "Rollout {}, Global Step {}, average {}".format(
                 #         rollout_epoch, self.get_global_step(rollout_epoch), {key:results[key] for key in self.rollout_metrics.get_keys()}
                 #     )
                 # )
-                self.log_to_tensorboard(results,timer_results,rollout_epoch,main_tag="Rollout")
+                # self.log_to_tensorboard(results,timer_results,rollout_epoch,main_tag="Rollout")
 
                 # save model periodically
                 if rollout_epoch % self.cfg.saving_interval == 0:
-                    self.save_current_model(f"epoch_{rollout_epoch}")
-                
-                # TODO(jh): currently eval is not supported in async, so we use rollout stats instead
-                self.rollout_metrics.update(results)
-
-                # save best stable model
-                rollout_metrics_mean = self.rollout_metrics.get_means()
-                reward = rollout_metrics_mean["reward"]
-                if reward >= best_reward:
-                    Logger.warning(
-                        "save the best model(average {})".format(rollout_metrics_mean)
-                    )
-                    best_reward = reward
-                    self.push_best_model_to_policy_server(rollout_epoch)
+                    self.save_current_model(f"epoch_{rollout_epoch}")                
                     
                 self.check_error([_async_training_loop])
 
@@ -649,9 +664,9 @@ class RolloutManager:
                     ]
                     break
 
-        # reduce
-        results, timer_results  = self.reduce_rollout_results(rollout_results)
-        return results, timer_results
+        # # reduce
+        # results, timer_results  = self.reduce_rollout_results(rollout_results)
+        return rollout_results
 
     def put_batch(
         self,

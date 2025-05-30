@@ -39,11 +39,13 @@ class Timer:
     def record(self, key):
         self.timestamps[key] = time.perf_counter()
 
-    def time(self, okey, nkey, name=None):
+    def time(self, okey, nkey=None, name=None):
         if okey is None:
             return None
         t = time.perf_counter()
         res = round(t - self.timestamps[okey], 8)
+        if nkey is None:
+            return res        
         self.timestamps[nkey] = t
         if name is None:
             name = nkey

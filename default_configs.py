@@ -78,41 +78,6 @@ default_configs={
         "config_path": "expr_configs/paper_exps_v3/large/NUM_AGENTS/rl_iter0_random_256_20_large_aNUM_AGENTS_s2500.yaml",
         "predefined_starts_template": "lmapf_lib/data/paper_exp_v3/agents/random_256_20/random_256_20_{}_NUM_AGENTS.agents",
         "predefined_tasks_template": "lmapf_lib/data/paper_exp_v3/tasks/random_256_20/random_256_20_{}.tasks"  
-    },
-    "ltf_maze": {
-        "config_path": "expr_configs/paper_exps_v3/ltf/Eval/maze/eval_ltf_maze_aNUM_AGENTS.yaml",
-        "predefined_starts_template": "",
-        "predefined_tasks_template": ""  
-    },
-    "ltf_pico": {
-        "config_path": "expr_configs/paper_exps_v3/ltf/Eval/pico/eval_ltf_pico_aNUM_AGENTS.yaml",
-        "predefined_starts_template": "",
-        "predefined_tasks_template": ""  
-    },
-    "ltf_den520d": {
-        "config_path": "expr_configs/paper_exps_v3/ltf/Eval/den520d/eval_ltf_den520d_aNUM_AGENTS.yaml",
-        "predefined_starts_template": "",
-        "predefined_tasks_template": ""  
-    },
-    "ltf_paris": {
-        "config_path": "expr_configs/paper_exps_v3/ltf/Eval/paris/eval_ltf_paris_aNUM_AGENTS.yaml",
-        "predefined_starts_template": "",
-        "predefined_tasks_template": ""  
-    },
-    "random-32-32-20": {
-        "config_path": "expr_configs/paper_exps_v3/extra/bootstrap_from_pibt_iter1_random-32-32-20_a600_s500.yaml",
-        "predefined_starts_template": "",
-        "predefined_tasks_template": ""  
-    },
-    "warehouse_real_robots": {
-        "config_path": "expr_configs/paper_exps_v3/real_robots/rl_iter0_warehouse_real_robots_aNUM_AGENTS_s150.yaml",
-        "predefined_starts_template": "lmapf_lib/data/paper_exp_v3/agents/warehouse_real_robots/warehouse_real_robots_{}_NUM_AGENTS.agents",
-        "predefined_tasks_template": "lmapf_lib/data/paper_exp_v3/tasks/warehouse_real_robots/warehouse_real_robots_{}.tasks"  
-    },
-    "warehouse_virtual_robots": {
-        "config_path": "expr_configs/paper_exps_v3/virtual_robots/bootstrap_from_pibt_iter1_warehouse_virtual_robots_aNUM_AGENTS_s250.yaml",
-        "predefined_starts_template": "lmapf_lib/data/paper_exp_v3/agents/warehouse_virtual_robots/warehouse_virtual_robots_{}_NUM_AGENTS.agents",
-        "predefined_tasks_template": "lmapf_lib/data/paper_exp_v3/tasks/warehouse_virtual_robots/warehouse_virtual_robots_{}.tasks"  
-    },
+    }
 }
 

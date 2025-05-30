@@ -25,7 +25,7 @@ import sys
 multiprocessing.set_start_method("spawn", force=True)
 
 arg_parser = argparse.ArgumentParser(description="Evaluate SILLM performance on LMAPF tasks.")
-arg_parser.add_argument("--output_folder", type=str, default="exp", help="Output folder to save the results.")
+arg_parser.add_argument("--output_folder", type=str, default="exp/eval", help="Output folder to save the results.")
 arg_parser.add_argument("--exp_name", type=str, help="Experiment name.")
 arg_parser.add_argument("--model_path", type=str, help="Path to the trained model.")
 arg_parser.add_argument("--WPPL_mode", type=str, help="WPPL mode to use.", choices=["PIBT","PIBT-RL","PIBT-LNS","PIBT-RL-LNS"])
@@ -107,10 +107,6 @@ if num_threads is not None:
     cfg.rollout_manager.worker.envs[0].WPPL.num_threads=num_threads
 env=MultiLMAPFEnv("global",seed,cfg.rollout_manager.worker.envs[0],"cpu",map_filter_keep,map_filter_remove)
 
-for map_name, num_robots in env.map_manager.instances_list:
-    # it will precompute HT for each instance
-    env.set_curr_env2(map_name, num_robots, verbose=False)
-
 def initialize():
     global env
     global policy
@@ -139,15 +135,8 @@ def initialize():
     Logger.warning("#params of critic is {}".format(get_model_num_params(policy.critic)))
     Logger.info("policy generated")
     
-    seed = np.random.randint(0,np.iinfo(np.int32).max)+worker_id
-    _env=MultiLMAPFEnv(0, seed, cfg.rollout_manager.worker.envs[0], device, map_filter_keep, map_filter_remove, precompute_HT=False)
-    for map_name, num_robots in _env.map_manager.instances_list:
-        # it will precompute HT for each instance
-        env.set_curr_env2(map_name, num_robots, verbose=False)
-        _env.set_curr_env2(map_name, num_robots, verbose=False)
-        _env.set_HT(env.get_HT())
-        _env.set_PLNSSolver(env.get_PLNSSolver())
-    env=_env
+    seed = worker_id #np.random.randint(0,np.iinfo(np.int32).max)+worker_id
+    env=MultiLMAPFEnv(0, seed, cfg.rollout_manager.worker.envs[0], device, map_filter_keep, map_filter_remove)
     env.check_valid(check_valid)
     env.enable_log(collect_log)
     Logger.info("env generated")

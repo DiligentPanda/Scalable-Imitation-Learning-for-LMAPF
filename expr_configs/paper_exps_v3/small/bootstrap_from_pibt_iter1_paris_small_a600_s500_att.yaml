@@ -1,5 +1,5 @@
 expr_group: LMAPF
-expr_name: paper_exps_v3_weighted_bootstrap_from_pibt_iter1_paris_small_a600_s500_basic_cnn_att_perm5_bn_1block
+expr_name: paper_exps_v3_bootstrap_from_pibt_iter1_paris_small_a600_s500_basic_cnn_att_perm5_bn_1block
 log_dir: ./logs             #log directory
 seed: 0
 eval_only: False            #True if only want evaluation
@@ -92,7 +92,7 @@ rollout_manager:
         learn_to_follow_maps_path: 
         agent_bins:
         map_path: "lmapf_lib/data/paper_exp_v3/small/Paris_1_256_small.map"
-        map_weights_path: "lmapf_lib/weight/paris_small_w001.w" 
+        map_weights_path: "" # not supported, keep it ""
         num_robots: 600
         device: "cpu"
         rollout_length: 500

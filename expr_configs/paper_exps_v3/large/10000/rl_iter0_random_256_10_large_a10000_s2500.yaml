@@ -1,5 +1,5 @@
 expr_group: LMAPF
-expr_name: paper_exps_v3_weighted_rl_iter0_random_256_10_large_a10000_s2500_basic_cnn_re_embed_perm5_bn_1block
+expr_name: paper_exps_v3_rl_iter0_random_256_10_large_a10000_s2500_basic_cnn_re_embed_perm5_bn_1block
 log_dir: ./logs             #log directory
 seed: 0
 eval_only: False            #True if only want evaluation
@@ -90,7 +90,7 @@ rollout_manager:
         learn_to_follow_maps_path: 
         agent_bins:
         map_path: "lmapf_lib/data/paper_exp_v3/large/random_256_10.map"
-        map_weights_path: "lmapf_lib/weight/random_256_10_large_w001.w" 
+        map_weights_path: "" # not supported, keep it ""
         num_robots: 10000
         device: "cuda"
         rollout_length: 2500

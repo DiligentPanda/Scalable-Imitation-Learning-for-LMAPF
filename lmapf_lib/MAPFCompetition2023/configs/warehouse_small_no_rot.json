@@ -2,13 +2,13 @@
     "lifelong_solver_name": [
         {
             "n_agents": 1000000,
-            "value": "LNS"
+            "value": "LaCAM2"
         }
     ],
     "map_weights_path": [
         {
             "n_agents": 1000000,
-            "value": "weight/warehouse_small_w001.w"
+            "value": ""
         }
     ],
     "max_agents_in_use": [
@@ -20,12 +20,12 @@
     "disable_corner_target_agents": [
         {
             "n_agents": 1000000,
-            "value": true
+            "value": false
         }
     ],
     "LNS": {
         "seed": 0,
-        "cutoffTime": 30.0,
+        "cutoffTime": 0.95,
         "screen": 0,
         "initAlgo": "LaCAM2",
         "replanAlgo": "PP",
@@ -40,22 +40,22 @@
         "window_size_for_CT": [
             {
                 "n_agents": 100000,
-                "value": 15
+                "value": 10
             }
         ],
         "window_size_for_CAT": [
             {
                 "n_agents": 100000,
-                "value": 15
+                "value": 10
             }
         ],
         "window_size_for_PATH": [
             {
                 "n_agents": 100000,
-                "value": 15
+                "value": 10
             }
         ],
-        "execution_window": 1,
+        "execution_window": 3,
         "fix_ng_bug": [
             {
                 "n_agents": 1000000,
@@ -67,7 +67,7 @@
             "planning_window": [
                 {
                     "n_agents": 100000,
-                    "value": 15
+                    "value": 10
                 }
             ],
             "execution_window": 1,

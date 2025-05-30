@@ -9,7 +9,7 @@ fi
 cd build && make -j16 lifelong && cd ..
 
 # export OMP_NUM_THREADS=1
-ARGS="--planTimeLimit 30 --fileStoragePath large_files/"
+ARGS="--planTimeLimit 1 --fileStoragePath large_files/"
 
 # # random:random
 # # ./build/lifelong --inputFile example_problems/random.domain/random_20.json $ARGS
@@ -29,11 +29,7 @@ ARGS="--planTimeLimit 30 --fileStoragePath large_files/"
 # ./build/lifelong --inputFile example_problems/warehouse.domain/warehouse_small_200.json $ARGS -o offline_eval/1210/test_warehouse_small_200.json --simulationTime 5000
 # ./build/lifelong --inputFile example_problems/warehouse.domain/warehouse_small_400.json $ARGS -o offline_eval/1210/test_warehouse_small_400.json --simulationTime 200
 # ./build/lifelong --inputFile example_problems/warehouse.domain/warehouse_small_600.json $ARGS -o offline_eval/1210/test_warehouse_small_600.json --simulationTime 5000 
-#LNS_NUM_THREADS=8 LNS_MAX_ITERATIONS=40000 ./build/lifelong --inputFile /root/GRF_MARL/lmapf_lib/data/paper_exp_v3/configs/warehouse_small_uniform/warehouse_small_uniform_0_600.json $ARGS -o offline_eval/1210/test_warehouse_small_800.json --simulationTime 500 
-
-LNS_NUM_THREADS=8 LNS_MAX_ITERATIONS=40000 ./build/lifelong --inputFile /root/GRF_MARL/lmapf_lib/data/paper_exp_v3/configs/warehouse_large_uniform/warehouse_large_uniform_0_10000.json $ARGS -o offline_eval/test_warehouse_small_800.json --simulationTime 5
-
-
+./build/lifelong --inputFile example_problems/warehouse.domain/warehouse_small_800.json $ARGS -o offline_eval/1210/test_warehouse_small_800.json --simulationTime 200 
 # ./build/lifelong --inputFile example_problems/warehouse.domain/warehouse_small_1000.json $ARGS -o offline_eval/1210/test_warehouse_small_1000.json --simulationTime 5000 
 
 # # warehouse:warehouse_large

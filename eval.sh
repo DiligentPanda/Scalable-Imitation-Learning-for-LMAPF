@@ -13,7 +13,7 @@ OUTPUT_FOLDER=exp/eval
 # the root folder for pretrained weights
 # IL is trained with our Scalable Imitation Algorithm
 # RL is trained with MAPPO
-MODEL_FOLDER=pretrained_models/static_guidance/v3/IL 
+MODEL_FOLDER=pretrained_models/dynamic_guidance/v4/IL 
 # PIBT, PIBT-RL, PIBT-LNS, PIBT-RL-LNS. 
 # PIBT-RL will load pretrained weights, PIBT will just call the original PIBT.
 # The LNS version will call LNS after PIBT initialization, used for training.

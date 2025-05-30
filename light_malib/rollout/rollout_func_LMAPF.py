@@ -86,7 +86,7 @@ def pull_policies(rollout_worker,policy_ids):
     behavior_policies = rollout_worker.get_policies(policy_ids)
     return behavior_policies
 
-def env_reset(env:MultiLMAPFEnv, behavior_policies, custom_reset_config, sync_rnd_val, eval):
+def env_reset(env:MultiLMAPFEnv, behavior_policies, custom_reset_config):
     global_timer.record("env_step_start")
     env_rets = env.reset(custom_reset_config)
     global_timer.time("env_step_start", "env_step_end", "env_step")
@@ -179,35 +179,37 @@ def submit_episode(data_server, episode, rollout_desc):
         )
 
 def submit_episode_bc(data_server, table_name, imitation_data):
-    map_name = imitation_data["map_name"]
-    num_robots = imitation_data["num_robots"]
-    curr_positions=imitation_data["curr_positions"]
-    target_positions=imitation_data["target_positions"]
-    priorities=imitation_data["priorities"]
-    actions=imitation_data["actions"]
+    # seed = imitation_data["seed"]
+    # map_name = imitation_data["map_name"]
+    # num_robots = imitation_data["num_robots"]
+    # curr_positions=imitation_data["curr_positions"]
+    # target_positions=imitation_data["target_positions"]
+    # priorities=imitation_data["priorities"]
+    # actions=imitation_data["actions"]
     
-    assert len(curr_positions)==len(actions), "{} vs {}".format(len(curr_positions),len(actions))
+    # assert len(curr_positions)==len(actions), "{} vs {}".format(len(curr_positions),len(actions))
     
-    transitions = []
-    for step in range(len(actions)):
-        transition = {
-            "map_name": map_name,
-            "num_robots": num_robots,
-            "curr_positions": curr_positions[step],
-            "target_positions": target_positions[step],
-            "priorities": priorities[step],
-            "actions": actions[step]
-        }
-        transitions.append(transition)
+    # transitions = []
+    # for step in range(len(actions)):
+    #     transition = {
+    #         "map_name": map_name,
+    #         "num_robots": num_robots,
+    #         "curr_positions": curr_positions[step],
+    #         "target_positions": target_positions[step],
+    #         "priorities": priorities[step],
+    #         "actions": actions[step]
+    #     }
+    #     transitions.append(transition)    
+    
     if hasattr(data_server.save, 'remote'):
         data_server.save.remote(
             table_name,
-            transitions
+            [imitation_data]
         )
     else:
         data_server.save(
             table_name,
-            transitions
+            [imitation_data]
         )
 
 def submit_batches(data_server,episode, rollout_desc):
@@ -276,7 +278,8 @@ def rollout_func(
     else:
         policy_device=device
     
-    # rollout_epoch=kwargs.get("rollout_epoch",None)
+    rollout_epoch=kwargs.get("rollout_epoch",None)
+    
     sync_rnd_val=kwargs.get("sync_rnd_val",None)
     instance=kwargs.get("instance", None)
     
@@ -350,7 +353,6 @@ def rollout_func(
                 guiding_policy=ray.get(data_server.get.remote("guiding_policy",False))
             else:
                 guiding_policy=None
-            guiding_policy=ray.get(data_server.get.remote("guiding_policy",False))
             if guiding_policy is not None:
                 guiding_policy=guiding_policy.to_device(policy_device,in_place=True)
             else:
@@ -399,7 +401,7 @@ def rollout_func(
     if not env.initialized() or eval or env.is_terminated():
         # assert rollout_length<=env.rollout_length,"rollout length {} should be less than or equal to env rollout length {} during evaluation".format(rollout_length,env.rollout_length)
         # we add a shallow_copy to ensure correctness in case that step_data is modified by some in-place operation.
-        step_data = env_reset(env,behavior_policies,custom_reset_config,sync_rnd_val,eval)
+        step_data = env_reset(env,behavior_policies,custom_reset_config)
         env.set_prev_step_data(shallow_copy(step_data))
     else:
         step_data = env.get_prev_step_data()
@@ -410,6 +412,8 @@ def rollout_func(
     episodes = []
     
     if collect_data:
+        seed = env.get_seed()
+        
         curr_positions_list=[]
         target_positions_list=[]
         priorities_list=[]
@@ -417,15 +421,15 @@ def rollout_func(
 
         curr_positions=env.curr_positions.clone()
         curr_positions=curr_positions[...,0]*env.map.width+curr_positions[...,1]
-        curr_positions=curr_positions.cpu().numpy()
+        curr_positions=curr_positions
         curr_positions_list.append(curr_positions)
         
-        target_positions=env._target_positions.clone()
+        target_positions=env.target_positions.clone()
         target_positions=target_positions[...,0]*env.map.width+target_positions[...,1]
-        target_positions=target_positions.cpu().numpy()
+        target_positions=target_positions
         target_positions_list.append(target_positions)
     
-        priorities_list.append(env.priorities.clone().cpu().numpy())
+        priorities_list.append(env.priorities.clone())
     # collect until rollout_length
     # TODO: we need to carefully deal with the termination of the environment
     # because we need to discard the last step data if the episode is terminated
@@ -476,7 +480,7 @@ def rollout_func(
                 result["log"]=env.get_episode_log()
             results.append(result)
             
-            step_data = env_reset(env,behavior_policies,custom_reset_config,sync_rnd_val,eval)
+            step_data = env_reset(env,behavior_policies,custom_reset_config)
             # we add a shallow_copy to ensure correctness in case that step_data is modified by some in-place operation.
             env.set_prev_step_data(shallow_copy(step_data))
         # prepare policy input
@@ -591,15 +595,13 @@ def rollout_func(
         if collect_data:
             curr_positions=env.curr_positions.clone()
             curr_positions=curr_positions[...,0]*env.map.width+curr_positions[...,1]
-            curr_positions=curr_positions.cpu().numpy()
             curr_positions_list.append(curr_positions)
             
-            target_positions=env._target_positions.clone()
+            target_positions=env.target_positions.clone()
             target_positions=target_positions[...,0]*env.map.width+target_positions[...,1]
-            target_positions=target_positions.cpu().numpy()
             target_positions_list.append(target_positions)
         
-            priorities_list.append(env.priorities.clone().cpu().numpy())
+            priorities_list.append(env.priorities.clone())
                 
         if verbose:
             Logger.info("env {} step {}'s stats: {}".format(env.id,step, env.get_episode_stats()))
@@ -710,13 +712,14 @@ def rollout_func(
     # return restuls
     results={"results":results}      
   
-    if collect_data:
-        curr_positions_list=np.array(curr_positions_list[:-1],dtype=int)
-        target_positions_list=np.array(target_positions_list[:-1],dtype=int)
-        priorities_list=np.array(priorities_list[:-1],dtype=float)
-        actions_list=np.array(actions_list,dtype=int)
+    if collect_data:        
+        curr_positions_list=torch.stack(curr_positions_list[:-1],dim=0).to(device="cpu",dtype=torch.int32).numpy()
+        target_positions_list=torch.stack(target_positions_list[:-1],dim=0).to(device="cpu",dtype=torch.int32).numpy()
+        priorities_list=torch.stack(priorities_list[:-1],dim=0).to(device="cpu",dtype=torch.float32).numpy()
+        actions_list=torch.stack(actions_list,dim=0).to(device="cpu",dtype=torch.int32).numpy()
   
         imitation_data = {
+            "seed": seed,
             "map_name": env.map.name,
             "num_robots": env.num_robots,
             "curr_positions":curr_positions_list,
@@ -809,7 +812,7 @@ def rollout_func_BC(
             "priorities":priorities
         }
         
-        env_rets = env_reset(env,behavior_policies,custom_reset_config,sync_rnd_val,eval)
+        env_rets = env_reset(env,behavior_policies,custom_reset_config)
 
         step_data = {
             EpisodeKey.CUR_OBS: env_rets[rollout_desc.agent_id][EpisodeKey.NEXT_OBS],
@@ -831,6 +834,123 @@ def rollout_func_BC(
     #     print(k,v.shape)
     
     submit_episode(data_server, episode, rollout_desc)
+    
+    results={"results":[]}
+    return results
+
+def rollout_func_BC_resim(
+    eval: bool,
+    rollout_worker,
+    rollout_desc: RolloutDesc,
+    env: MultiLMAPFEnv,
+    behavior_policies,
+    data_server,
+    rollout_length,
+    **kwargs    
+):
+    sync_rnd_val=kwargs.get("sync_rnd_val",None)
+    instance=kwargs.get("instance", None)
+    
+    env.set_eval(eval)
+    
+    if instance is None:
+        if sync_rnd_val is not None and not eval:
+            # TODO(rivers): it is a bad idea to use rollout_epoch to sync here?
+            env.set_curr_env(sync_rnd_val)
+        else:
+            env.set_curr_env(None)
+    else:
+        map_name, num_robots=instance
+        env.set_curr_env2(map_name, num_robots, verbose=False)
+    
+    map_name = env.curr_env.map.name
+    num_robots = env.curr_env.num_robots
+    
+    while True:
+        data,succ=ray.get(data_server.sample.remote("imitation_{}_{}".format(map_name,num_robots),1))
+        if succ:
+            break
+        else:
+            Logger.error("fail to sample data from data server in rollout_func_BC")
+    
+    step_data_list=[]
+    
+    # datum={
+    #     "map_name": _map_name,
+    #     "num_robots": _num_robots,
+    #     "curr_positions":_curr_positions[:200],
+    #     "target_positions":_target_positions[:200],
+    #     "priorities":_priorities[:200],
+    #     "actions":_actions[:200]
+    # }
+    
+    data=data[0]
+    seed=data["seed"]
+    
+    sampled_steps=np.random.choice(len(data["curr_positions"]),size=rollout_length,replace=False)
+    sampled_step_masks=np.zeros(len(data["curr_positions"]),dtype=bool)
+    sampled_step_masks[sampled_steps]=True
+    
+    # NOT support now
+    actor_rnn_states=None
+    critic_rnn_states=None
+    for step in range(len(data["curr_positions"])):
+         # num_robots
+        curr_positions=data["curr_positions"][step]
+        curr_positions_y=curr_positions//env.map.width
+        curr_positions_x=curr_positions%env.map.width
+        # num_robots,2
+        curr_positions=np.stack([curr_positions_y,curr_positions_x],axis=-1)
+        target_positions=data["target_positions"][step]
+        target_positions_y=target_positions//env.map.width
+        target_positions_x=target_positions%env.map.width
+        target_positions=np.stack([target_positions_y,target_positions_x],axis=-1)
+        priorities=data["priorities"][step]
+        actions=torch.tensor(data["actions"][step], dtype=torch.int32, device=env.device)
+        
+        custom_reset_config={
+            "seed": seed,
+            "curr_positions": curr_positions,
+            "target_positions": target_positions,
+            "priorities": priorities
+        }
+        
+        if step==0:
+            env_rets = env_reset(env,behavior_policies,custom_reset_config)
+            actor_rnn_states=env_rets[rollout_desc.agent_id][EpisodeKey.ACTOR_RNN_STATE]
+            critic_rnn_states=env_rets[rollout_desc.agent_id][EpisodeKey.CRITIC_RNN_STATE]
+        else:
+            env_rets = env.sync_step(custom_reset_config)
+            
+        step_data = {
+            EpisodeKey.CUR_OBS: env_rets[rollout_desc.agent_id][EpisodeKey.NEXT_OBS],
+            EpisodeKey.CUR_GLOBAL_OBS: env_rets[rollout_desc.agent_id][EpisodeKey.NEXT_GLOBAL_OBS],
+            EpisodeKey.ACTION_MASK: env_rets[rollout_desc.agent_id][EpisodeKey.ACTION_MASK],
+            EpisodeKey.ACTION: actions,
+            EpisodeKey.DONE: env_rets[rollout_desc.agent_id][EpisodeKey.DONE],
+            EpisodeKey.ACTOR_RNN_STATE: actor_rnn_states,
+            EpisodeKey.CRITIC_RNN_STATE: critic_rnn_states,
+            EpisodeKey.GUIDING_ACTION: actions,
+        }
+
+        if sampled_step_masks[step]:
+            step_data_list.append(step_data)
+        
+    episode=stack_step_data(step_data_list,{})
+
+    # for k,v in episode.items():
+    #     print(k,v.shape)
+    if data_server is not None:
+        submit_episode(data_server, episode, rollout_desc)
+                
+    # stats = env.get_episode_stats()
+    # result = {
+    #     "main_agent_id": rollout_desc.agent_id,
+    #     "policy_ids": "_imitation",
+    #     "map_name": env.map.name,
+    #     "num_robots": env.num_robots,
+    #     "stats": stats,
+    # }
     
     results={"results":[]}
     return results
@@ -915,7 +1035,7 @@ def rollout_func_BC_RNN(
             "priorities":priorities[idx]
         }
         
-        step_data = env_reset(env,behavior_policies,custom_reset_config,sync_rnd_val,eval)
+        step_data = env_reset(env,behavior_policies,custom_reset_config)
         
         if actor_rnn_states is not None:
             step_data[rollout_desc.agent_id][EpisodeKey.ACTOR_RNN_STATE]=actor_rnn_states
@@ -1099,9 +1219,8 @@ def rollout_func_for_WPPL(
         custom_reset_config["priorities"]=kwargs["priorities"]
     
     # assert rollout_length<=env.rollout_length,"rollout length {} should be less or equal to env rollout length {} during evaluation".format(rollout_length,env.rollout_length)
-
     # we add a shallow_copy to ensure correctness in case that step_data is modified by some in-place operation.
-    step_data = env_reset(env,behavior_policies,custom_reset_config,sync_rnd_val,eval)
+    step_data = env_reset(env,behavior_policies,custom_reset_config)
     # env.set_prev_step_data(shallow_copy(step_data))
 
     step = 0
@@ -1239,7 +1358,7 @@ def rollout_func_for_WPPL(
             "stats": stats,
         }
         results.append(result)
-        # step_data = env_reset(env,behavior_policies,custom_reset_config,sync_rnd_val,eval)
+        # step_data = env_reset(env,behavior_policies,custom_reset_config)
         # env.set_prev_step_data(step_data)
 
     # return restuls

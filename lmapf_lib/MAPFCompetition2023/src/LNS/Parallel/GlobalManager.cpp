@@ -29,14 +29,8 @@ GlobalManager::GlobalManager(
     window_size_for_CT(window_size_for_CT), window_size_for_CAT(window_size_for_CAT), window_size_for_PATH(window_size_for_PATH),
     screen(screen), agent_infos(agent_infos), has_disabled_agents(has_disabled_agents), num_threads(_num_threads), max_iterations(_max_iterations), verbose(_verbose) {
 
-    if (_max_iterations < 0) {
-        char * max_iterations_env = std::getenv("LNS_MAX_ITERATIONS");
-        if (max_iterations_env!=nullptr) {
-            max_iterations=std::atoi(max_iterations_env);
-        } else {
-            max_iterations = INT_MAX;
-        }
-    }
+    if (_max_iterations < 0)
+        max_iterations = INT_MAX;
 
     if (num_threads==-1) {
         char * num_threads_env = std::getenv("LNS_NUM_THREADS");

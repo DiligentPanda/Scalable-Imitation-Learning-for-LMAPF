@@ -13,7 +13,7 @@ import torch
 class WPPL:
     def __init__(self, 
                  seed, 
-                 real_env: MultiLMAPFEnv,
+                 real_env,
                  env_cfg, 
                  window_size, 
                  num_threads=1, 
@@ -32,13 +32,15 @@ class WPPL:
         self.time_limit_all=time_limit_all
         self.device=device
         self.verbose=verbose
+        
         self.real_env=real_env
         
         # this env is for internal simulation
         self.env_cfg=copy.deepcopy(env_cfg)
-        self.env=MultiLMAPFEnv("WPPL_{}".format(seed), seed, self.env_cfg, device=self.real_env.device, precompute_HT=False)
+        self.env=MultiLMAPFEnv("WPPL_{}".format(seed), seed, self.env_cfg, device)
         self.env.check_valid(False)
         self.env.enable_log(False)
+        self.env.set_eval(True)
         # we don't want to sample new target positions, because we don't have ideas about the new target positions
         # TODO(rivers): we can do if ...
         self.env_pibt_mode=env_pibt_mode
@@ -131,26 +133,37 @@ class WPPL:
         # print(target_positions)
         # print(init_paths)
 
-        # call PLNSSolver
-        start_locations=curr_positions[...,0]*self.env.map.width+curr_positions[...,1]
-        start_locations=start_locations.cpu().numpy().tolist()
-        goal_locations=target_positions[...,0]*self.env.map.width+target_positions[...,1]
-        goal_locations=goal_locations.cpu().numpy().tolist()
-        
-        if self.time_limit_all:
-            pass
-        
         global_timer.record("lns_s")
-        actions, total_delays=self.env.PLNSSolver.solve(
-            start_locations,
-            goal_locations,
-            init_paths,
-            self.action_choices,
-            self.time_limit
-        )       
+        if not self.real_env.get_use_guiding_path():
+
+            # call PLNSSolver
+            start_locations=curr_positions[...,0]*self.env.map.width+curr_positions[...,1]
+            start_locations=start_locations.cpu().numpy().tolist()
+            goal_locations=target_positions[...,0]*self.env.map.width+target_positions[...,1]
+            goal_locations=goal_locations.cpu().numpy().tolist()
+            
+            if self.time_limit_all:
+                pass
+            
+            actions, total_delays=self.env.PLNSSolver.solve(
+                start_locations,
+                goal_locations,
+                init_paths,
+                self.action_choices,
+                self.time_limit
+            )       
+        else:
+            actions=self.real_env.PyShadowSystem.query_lns_actions(
+                init_paths,
+                self.window_size,
+                self.env_cfg["WPPL"]["num_threads"],
+                self.env_cfg["WPPL"]["max_iterations"]
+            )
+            # TODO
+            total_delays=-1
         global_timer.time("lns_s","lns_e","lns")
         
-        actions=np.array(actions,dtype=int)
+        actions=torch.Tensor(actions).to(dtype=torch.float32,device=curr_positions.device)
         if not eval:
             last_step_data={
                 rollout_desc.agent_id: step_data_list[-1]
@@ -177,13 +190,15 @@ class WPPL:
         map_name = kwargs["map_name"]
         num_robots = kwargs["num_robots"]
         
-        self.real_env.set_curr_env2(map_name, num_robots, False)
         self.env.set_curr_env2(map_name, num_robots, False)
-        self.env.set_HT(self.real_env.get_HT())
-        self.env.set_PLNSSolver(self.real_env.get_PLNSSolver())
         self.env.set_one_shot(True)
         self.env.set_pibt_func(self.env_pibt_mode)
         self.env.set_rollout_length(self.window_size)
+        
+        self.real_env.set_curr_env2(map_name, num_robots, False)
+        if self.real_env.get_use_guiding_path():
+            self.env.set_PyShadowSystem(self.real_env.get_PyShadowSystem(),sync=False)
+        
         self.action_choices=self.env.movements.reshape(-1).cpu().numpy().tolist()
         
         # weird but fine

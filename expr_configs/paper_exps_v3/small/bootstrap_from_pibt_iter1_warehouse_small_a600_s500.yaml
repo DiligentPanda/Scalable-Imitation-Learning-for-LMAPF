@@ -1,5 +1,5 @@
 expr_group: LMAPF
-expr_name: paper_exps_v3_weighted_bootstrap_from_pibt_iter1_warehouse_small_a600_s500_basic_cnn_re_embed_perm5_bn_1block
+expr_name: paper_exps_v3_bootstrap_from_pibt_iter1_warehouse_small_a600_s500_basic_cnn_re_embed_perm5_bn_1block
 log_dir: ./logs             #log directory
 seed: 0
 eval_only: False            #True if only want evaluation
@@ -20,7 +20,7 @@ framework:
   # meta_solver: "nash"         #'nash', 'uniform', 'pfsp'
   sync_training: True
   max_dagger_iterations: 100
-  num_episodes_per_iter: 8
+  num_episodes_per_iter: 50
   stopper:
     type: "max_step_stopper"
     kwargs:
@@ -30,7 +30,7 @@ agent_manager:
   share_policies: False # whether global agents (teams) share the same policy. Not whether agents in a team share the same policy, which should be defined in the actor.
 
 evaluation_manager:
-  num_eval_rollouts: 8
+  num_eval_rollouts: 32
 
 policy_data_manager:
   update_func: "LMAPF" 
@@ -54,11 +54,11 @@ rollout_manager:
       num_gpus: 0.004
       resources:
         - ["node:${distributed.nodes.master.ip}",0.01]
-  num_workers: 8     # numbers of parallel rollout worker, one env per worker by default
+  num_workers: 50     # numbers of parallel rollout worker, one env per worker by default
   seed: 12345
   saving_interval: 100 # the frequency of dumping model's weight
-  batch_size: 8
-  eval_batch_size: 8
+  batch_size: 32
+  eval_batch_size: 32
   eval_freq: 20 # epochs
   rollout_metric_cfgs:
     reward:
@@ -92,7 +92,7 @@ rollout_manager:
         learn_to_follow_maps_path: 
         agent_bins:
         map_path: "lmapf_lib/data/paper_exp_v3/small/warehouse_small.map"
-        map_weights_path: "lmapf_lib/weight/warehouse_small_w001.w" 
+        map_weights_path: "" # not supported, keep it ""
         num_robots: 600
         device: "cpu"
         rollout_length: 500
@@ -121,13 +121,13 @@ training_manager:
   master_addr: "127.0.0.1"
   master_port:  "12774"
   local_queue_size: 1
-  batch_size: 8 # how many data sample from DatasetServer per time.
+  batch_size: 32 # how many data sample from DatasetServer per time.
   num_prefetchers: 1
   data_prefetcher:
     distributed:
       resources:
         num_cpus: 1
-  num_trainers: 1 # equals to number of GPUs by default
+  num_trainers: 4 # equals to number of GPUs by default
   # control the frequency of remote parameter update
   update_interval: 1
   gpu_preload: False

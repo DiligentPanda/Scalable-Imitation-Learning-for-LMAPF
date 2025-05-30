@@ -131,11 +131,6 @@ int main(int argc, char **argv)
     if (agents.size() > tasks.size())
         logger->log_warning("Not enough tasks for robots (number of tasks < team size)");
 
-    if (agents.size() < team_size) {
-        logger->log_fatal("Not enough agents for the team size");
-        exit(1);
-    }
-
     std::string task_assignment_strategy = data["taskAssignmentStrategy"].get<std::string>();
     if (task_assignment_strategy == "greedy")
     {
