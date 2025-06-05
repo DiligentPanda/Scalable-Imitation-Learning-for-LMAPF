@@ -28,6 +28,7 @@ arg_parser = argparse.ArgumentParser(description="Evaluate SILLM performance on 
 arg_parser.add_argument("--output_folder", type=str, default="exp", help="Output folder to save the results.")
 arg_parser.add_argument("--exp_name", type=str, help="Experiment name.")
 arg_parser.add_argument("--model_path", type=str, help="Path to the trained model.")
+arg_parser.add_argument("--map_weights_path", type=str, default="DEFAULT", help="Path to the map weights file. If not provided, will use the default weights from the config.")
 arg_parser.add_argument("--WPPL_mode", type=str, help="WPPL mode to use.", choices=["PIBT","PIBT-RL","PIBT-LNS","PIBT-RL-LNS"])
 arg_parser.add_argument("--num_agents", type=str, help="Number of agents in the environment.")
 arg_parser.add_argument("--num_processes", type=int, default=1, help="Number of processes to use for evaluation.")
@@ -45,6 +46,7 @@ output_folder = args.output_folder
 
 exp_name = args.exp_name
 model_path = args.model_path
+map_weights_path = args.map_weights_path
 WPPL_mode = args.WPPL_mode
 num_agents = args.num_agents
 
@@ -77,6 +79,7 @@ map_filter_remove=None #["test-mazes-s41_wc5_od50","test-mazes-s45_wc4_od55"]
 basic_info={
     "exp_name": exp_name,
     "model_path": model_path,
+    "map_weights_path": map_weights_path,
     "WPPL_mode": WPPL_mode,
     "num_agents": num_agents,
     "rollout_length": rollout_length,
@@ -99,6 +102,12 @@ def get_model_num_params(model):
 seed=int(int(time.time()))
 cfg=load_cfg(config_path)
 cfg.rollout_manager.worker.envs[0].WPPL.mode=WPPL_mode
+if map_weights_path=="DEFAULT":
+    pass
+elif map_weights_path=="NONE":
+    cfg.rollout_manager.worker.envs[0].map_weights_path=""
+else:
+    cfg.rollout_manager.worker.envs[0].map_weights_path=map_weights_path
 if rollout_length is not None:
     cfg.rollout_manager.worker.envs[0].rollout_length=rollout_length
 if max_iterations is not None:
