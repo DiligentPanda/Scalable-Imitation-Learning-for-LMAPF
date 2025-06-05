@@ -25,7 +25,7 @@ The implementation of Dynamic Guidance Version is more complex than the Static G
 
 1. For reproduction results of Static Guidance on the main benchmark of this paper, please refer to the line 4 of the Table IV in the appendix. (using `eval.sh`.)
 
-2. For reproduction results of Backward Dijkstra on the main benchmark of this paper, please refer to the line 2 of the Table IV in the appendix.
+2. For reproduction results of Backward Dijkstra on the main benchmark of this paper, please refer to the line 2 of the Table IV in the appendix. (using `eval.sh` and set MODEL_FOLDER or MAP_WEIGHTS_PATH.)
 
 3. For reporduction results of Backward Dijkstra on the learn-to-follow benchmark. Please refer to the Figure 9 in the appendix. (using `eval_ltf.sh`.)
 
