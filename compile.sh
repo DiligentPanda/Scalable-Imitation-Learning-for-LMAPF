@@ -7,14 +7,14 @@ pip install -e .
 
 
 cd lmapf_lib/MAPFCompetition2023
-git submodule init
-git submodule update
+# git submodule init
+# git submodule update
 ./compile.sh
 
-cd ../..
-ls
+# cd ../..
+# ls
 
-cd lmapf_lib/Guided-PIBT
-git submodule init
-git submodule update
-./compile.sh
+# cd lmapf_lib/Guided-PIBT
+# git submodule init
+# git submodule update
+# ./compile.sh
