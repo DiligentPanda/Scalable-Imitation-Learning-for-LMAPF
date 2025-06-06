@@ -177,29 +177,6 @@ def evaluate(exp_arg):
     
     idx, config_path, model_path, seed, map_name, num_agents = exp_arg
     Logger.info("Start rollout {}".format(idx))
-    # env.set_seed(seed)
-    # cfg = load_cfg(config_path)
-
-    # cfg.rollout_manager.worker.envs[0].WPPL.mode=WPPL_mode
-    # cfg.rollout_manager.worker.envs[0].rollout_length=rollout_length
-    # cfg.rollout_manager.worker.envs[0].WPPL.max_iterations=max_iterations
-    # cfg.rollout_manager.worker.envs[0].WPPL.num_threads=num_threads
-
-    # policy_id = "policy_0"
-    # policy=MAPPO.load(model_path, env_agent_id="agent_0")
-    
-    # Logger.warning("#params of actor is {}".format(get_model_num_params(policy.actor)))
-    # Logger.warning("#params of critic is {}".format(get_model_num_params(policy.critic)))
-    
-    # policy=policy.to_device(device)
-    
-    # Logger.info("policy generated")    
-    # env=MultiLMAPFEnv(0, seed, cfg.rollout_manager.worker.envs[0], device, map_filter_keep, map_filter_remove)
-    
-    # env.check_valid(check_valid)
-    # env.enable_log(collect_log)
-    
-    # Logger.info("env generated")
     
     if predefined_starts_template:
         if predefined_starts_indexed:
@@ -300,7 +277,6 @@ if __name__=="__main__":
     
     results=tree.map_structure(convert_to_np,results)
 
-    # TODO dump results
     results_json_path = os.path.join(output_folder,"results.json")
     with open(results_json_path,'w') as f:
         json.dump(results,f,indent=4)
@@ -324,10 +300,6 @@ if __name__=="__main__":
             }
         data[(r["map_name"],r["num_robots"])]["throughput"].append(r["stats"]["agent_0"]["throughput"])
         data[(r["map_name"],r["num_robots"])]["mean_step_time"].append(_r["mean_step_time"])
-
-    # import pandas as pd
-    # data=pd.DataFrame(data,columns=["map_name","num_robots","stats"])
-    #ins_data=data.groupby(by=["map_name","num_robots"]).mean().reset_index()
 
     import numpy as np
     from scipy.stats import t as t_dist
