@@ -65,7 +65,7 @@ class LMAPFEnv(BaseEnv):
         assert self.FOV_height%2==1
         assert self.FOV_width%2==1
         
-        # TODO: move to the __init__, we add FOV_height//2 because of the padding
+        # we add FOV_height//2 because of the padding
         offsets_y=torch.arange(-(self.FOV_height//2),(self.FOV_height+1)//2,dtype=torch.int32,device=self.device)
         offsets_x=torch.arange(-(self.FOV_width//2),(self.FOV_width+1)//2,dtype=torch.int32,device=self.device)
         # # FOV_height, FOV_width, 2
@@ -77,58 +77,18 @@ class LMAPFEnv(BaseEnv):
             self.agent_id: self.num_robots
         }
         
-        # TODO(rivers): maybe we can cache some results later.
-        
          # 1 - obstacle, 0 - empty location
         self.graph=torch.tensor(self.map.graph,device=self.device,dtype=torch.int32)
         self.empty_locations=torch.nonzero(self.graph==0).type(torch.int32)
         self.padded_graph=torch.nn.functional.pad(self.graph,(self.FOV_height//2,self.FOV_height//2,self.FOV_width//2,self.FOV_width//2),mode='constant',value=1)
         
-        # self.padded_graph_location_ys=torch.zeros_like(self.padded_graph)
-        # self.padded_graph_location_xs=torch.zeros_like(self.padded_graph)
-        
-        # self.padded_graph_location_ys=torch.arange(-self.FOV_height//2+1,self.map.height+self.FOV_height//2,dtype=torch.float32,device=self.device).reshape(-1,1).repeat(1,self.map.width+self.FOV_width-1)/(self.map.height*2)
-        # self.padded_graph_location_xs=torch.arange(-self.FOV_width//2+1,self.map.width+self.FOV_width//2,dtype=torch.float32,device=self.device).repeat(self.map.height+self.FOV_height-1,1)/(self.map.width*2)
-        
-        # assert self.padded_graph_location_ys.shape[0]==self.map.height+self.FOV_height-1, "{} vs {}".format(self.padded_graph_location_ys.shape[0],self.map.height+self.FOV_height-1)
-        # assert self.padded_graph_location_ys.shape[1]==self.map.width+self.FOV_width-1
-        # assert self.padded_graph_location_xs.shape[0]==self.map.height+self.FOV_height-1
-        # assert self.padded_graph_location_xs.shape[1]==self.map.width+self.FOV_width-1
-        
         corner_graph=(1-self.graph).float()
         kernel=torch.tensor([[0,1,0],[1,0,1],[0,1,0]],dtype=torch.float32,device=self.device)
         self.corner_graph = F.conv2d(corner_graph.reshape(1,1,*corner_graph.shape), kernel.reshape(1,1,*kernel.shape), padding=kernel.shape[0]//2)
         self.corner_graph = (self.corner_graph<=1.0).reshape(*corner_graph.shape)
-                
-        # ret=py_compute_heuristics.compute_heuristics(cfg["map_path"],"")
-        # loc_size,empty_locs,main_heuristics=ret
-        # assert empty_locs.size==loc_size and main_heuristics.size==loc_size*loc_size
-        # self.uniform_heuristic_table=HeuristicTable(self.map,self.padded_graph,empty_locs,main_heuristics,self.device)
     
         self.starts=[]
         self.tasks=[]
-    
-        # _num_conflict_actions=29
-        # self.conflict_action_table={}
-        # for dy in range(-2,2+1):
-        #     for dx in range(-2,2+1):
-        #         loc1=np.array([0,0])
-        #         loc2=np.array([dy,dx])
-        #         for act1, mov1 in enumerate(self.movements_py):
-        #             for act2, mov2 in enumerate(self.movements_py):
-        #                 next_loc1=loc1+mov1
-        #                 next_loc2=loc2+mov2
-        #                 if np.all(next_loc1==next_loc2) or (np.all(next_loc1==loc2) and np.all(next_loc2==loc1)):
-        #                     if (dy,dx) not in self.conflict_action_table:
-        #                         self.conflict_action_table[(dy,dx)]=[]
-        #                     self.conflict_action_table[(dy,dx)].append((act1,act2))
-        # self.num_conflict_actions=sum([len(l) for l in self.conflict_action_table.values()])
-        # assert _num_conflict_actions==self.num_conflict_actions, "{} {} {}".format(_num_conflict_actions,self.num_conflict_actions,self.conflict_action_table)
-         
-        # TODO: preload heuristic graph
-        # self.data_server=get_actor("Env_{}".format(self.id),"DataServer")
-        # empty_locs=ray.get(self.data_server.get.remote("empty_locs"))
-        # main_heuristics=ray.get(self.data_server.get.remote("main_heuristics"))
     
         sys.path.insert(0,"lmapf_lib/MAPFCompetition2023/build")
         import py_PIBT
@@ -137,7 +97,6 @@ class LMAPFEnv(BaseEnv):
         self._initialized=False
         
         self.prev_step_data = None
-        
         
         self._tasks_loaded=False
         self._agents_loaded=False
@@ -148,15 +107,11 @@ class LMAPFEnv(BaseEnv):
         self._pibt_func="guard"
         self._eval=True
         
-        # self.num_edges=10
-        
-        # self.history_len=3
-        
         self.use_permutation=False
-        # assert not self.use_permutation, "it is not supported anymore, if we don't want to use sequential models"
+        assert not self.use_permutation, "it is not supported anymore, if we don't want to use sequential models"
         
         self._enable_log=False
-        self._check_valid=True
+        self._check_valid=False
         
         self._use_guiding_path=True
         
@@ -298,18 +253,10 @@ class LMAPFEnv(BaseEnv):
         return self._pibt_func
         
     def PIBT_solve(self, guiding_actions=None, heuristics=None):
-        # TODO: we need input actions, otherwise it is just a PIBT
-        # TODO: we can add PIBT prior to the actor
-        
         priorities=self.priorities.flatten().cpu().numpy().tolist()
         locations=self.curr_positions.flatten().cpu().numpy().tolist()
         action_choices=self.movements.flatten().cpu().numpy().tolist()
         map_size=[self.map.height,self.map.width]
-        
-        # get heuristics for PIBT
-        # local_views=self.curr_positions[:,None,:]+self.movements
-        # offseted_local_views=local_views+self.padded_graph_offsets
-        # num_robots, num_actions
         
         assert guiding_actions is None or heuristics is None
                          
@@ -323,14 +270,6 @@ class LMAPFEnv(BaseEnv):
                 self.target_positions
             )
             heuristics=heuristics.squeeze(1)
-            # print(heuristics)
-            # temp=heuristics.copy()
-            # temp[temp<0]=1000000
-            # best_actions=np.argmin(temp,axis=1)
-            # # print(best_actions)
-            # heuristics[np.arange(len(best_actions)),best_actions]=0
-            # print(heuristics)
-            # TODO: we actually need to check this action is valid.
             sampling=False
         else:
             local_views=self.curr_positions[:,None,:]+self.movements
@@ -355,9 +294,6 @@ class LMAPFEnv(BaseEnv):
         heuristics=heuristics.flatten().tolist()
         
         actions=self.PIBTSolver.solve(priorities,locations,heuristics,action_choices,map_size,sampling)
-        
-        # actions=self.PyShadowSystem.query_pibt_actions()
-        
         actions=torch.tensor(actions,dtype=torch.int32,device=self.device)
         
         return actions
@@ -376,37 +312,14 @@ class LMAPFEnv(BaseEnv):
         
     def update_permutation(self):
         if self.use_permutation:
-            # we will keep the high-priority agent first
-            # if self._eval:
-            #     self.perm_indices=torch.argsort(self.priorities,descending=True)
-            # else:
             self.perm_indices=torch.randperm(len(self.priorities),device=self.device)
             self.reverse_perm_indices=torch.arange(len(self.perm_indices),device=self.device,dtype=self.perm_indices.dtype)
             self.reverse_perm_indices[self.perm_indices]=self.reverse_perm_indices.clone()
-    
-    def record_progress(self):
-        progress = None
-        if not self.is_terminated():
-            progress=Progress(
-                # state
-                self.step_ctr,
-                self.curr_positions,
-                self.target_positions,
-                self.priorities,
-                # statistics
-                
-            )
-        
-        self.progress_manager.record_progress(self.map.name, self.num_robots, progress)
-        
 
     def reset(self, custom_reset_config): 
         seed=custom_reset_config.get("seed",None)
         self.set_seed(seed)       
         self._initialized=True
-        # self.feature_encoders = custom_reset_config["feature_encoders"]
-        # self.main_agent_id = custom_reset_config["main_agent_id"]
-        # self.rollout_length = custom_reset_config["rollout_length"]
         
         self.step_ctr=0
         
@@ -445,8 +358,6 @@ class LMAPFEnv(BaseEnv):
         if self._enable_log:
             self.episode_log.add_starts(self.curr_positions)
             self.episode_log.add_new_tasks(0,None,self.target_positions)
-                
-        #self.disabled=torch.zeros_like(self.priorities,dtype=torch.bool,device=self.device)
     
         # statistics
         self.valid_ctr=0  
@@ -454,16 +365,9 @@ class LMAPFEnv(BaseEnv):
         self.total_rewards=torch.zeros(size=(self.num_robots,),dtype=torch.float32,device=self.device)
         self.total_individual_rewards=torch.zeros(size=(self.num_robots,),dtype=torch.float32,device=self.device)
         self.total_team_rewards=torch.zeros(size=(self.num_robots,),dtype=torch.float32,device=self.device)
-        # self.total_guiding_rewards=torch.zeros(size=(self.num_robots,),dtype=torch.float32,device=self.device)
         self.total_completed_tasks=torch.zeros_like(self.total_rewards)
         self.action_cnts=torch.zeros(size=(self.num_robots,self.action_dim),dtype=torch.float32,device=self.device)
-        # self.vertex_usages=torch.zeros_like(self.graph,dtype=torch.float32,device=self.device)
-        # self.edge_usages=torch.zeros((*self.graph.shape,self.action_dim),dtype=torch.float32,device=self.device)
         
-        # self.reward_map_for_GGO=torch.zeros((*self.graph.shape,),dtype=torch.float32,device=self.device)
-    
-        # self.history=[]
-
         # PyShadowSystem
         # TODO: should we pass in the disabled agents?
         if self._use_guiding_path and self._sync_PyShadowSystem:
@@ -498,7 +402,6 @@ class LMAPFEnv(BaseEnv):
                 self.target_positions=self.target_positions[self.reverse_perm_indices]
                 self.priorities=self.priorities[self.reverse_perm_indices]
             
-            # TODO: let set dones when agent finish tasks?
             dones=torch.zeros((self.num_robots,1),dtype=torch.bool,device=self.device)
     
         rets = {
@@ -554,7 +457,7 @@ class LMAPFEnv(BaseEnv):
             self.target_positions=self.target_positions[self.reverse_perm_indices]
             self.priorities=self.priorities[self.reverse_perm_indices]
         
-        # TODO: let set dones when agent finish tasks?
+        # dones here will not be used because of imitation learning
         dones=torch.zeros((self.num_robots,1),dtype=torch.bool,device=self.device)
     
         rets = {
@@ -612,8 +515,6 @@ class LMAPFEnv(BaseEnv):
         if self._enable_log:
             self.episode_log.add_actions(actions)
         
-        # assert len(actions)==self.num_robots
-        # assert actions.max()<=4 and actions.min()>=0
         movements=self.movements[actions]
         next_positions=self.curr_positions+movements
         global_timer.time("pibt_s","pibt_e","pibt")
@@ -675,9 +576,6 @@ class LMAPFEnv(BaseEnv):
             curr_costs=self.heuristic_table.get_distances(self.curr_positions,self.target_positions)
             rewards, individual_rewards, team_rewards =self.get_rewards(prev_costs,curr_costs,reached)
             global_timer.time("reward_s","reward_e","reward")
-            
-            # consistent rewards
-            # rewards+=(actions==original_actions).float()*0.1
                 
             # update statistics
             global_timer.record("stats_s")
@@ -685,21 +583,11 @@ class LMAPFEnv(BaseEnv):
             self.total_rewards+=rewards
             self.total_individual_rewards+=individual_rewards
             self.total_team_rewards+=team_rewards
-
-            # self.vertex_usages[self.curr_positions[:,0],self.curr_positions[:,1]]+=1
-            # self.edge_usages[self.curr_positions[:,0],self.curr_positions[:,1],actions]+=1
+            
             self.action_consistent_rate+=(actions==original_actions).float()
             global_timer.time("stats_s","stats_e","stats")
         else:
             rewards=torch.zeros_like(self.total_rewards)
-        
-        # TODO: we should use unweighted heuristic to compute reward here, so we need another heuristic table
-        # global_timer.record("reward2_s")
-        # prev_dists=self.heuristic_table.get_distances(prev_positions,self.target_positions)
-        # curr_dists=self.heuristic_table.get_distances(self.curr_positions,self.target_positions)
-        # individual_rewards=(prev_dists-curr_dists)-1
-        # global_timer.time("reward2_s","reward2_e","reward2")
-        #self.reward_map_for_GGO[prev_positions[:,0],prev_positions[:,1]]+=individual_rewards
         
         global_timer.record("reach_s")
         # if reached need to resample targets
@@ -707,9 +595,7 @@ class LMAPFEnv(BaseEnv):
             if self._enable_log:
                 self.episode_log.add_completed_tasks(self.step_ctr,reached)
             num_reached=torch.sum(reached.type(torch.int32)).item()
-            # Logger.error("{}: {}".format(self.step_ctr, num_reached))
-            # TODO(rivers): we should also set active mask
-            # raise NotImplementedError
+
             if not self._one_shot:
                 self.target_positions[reached]=self.sample_targets(None, reached)
             if self._enable_log:
@@ -759,8 +645,6 @@ class LMAPFEnv(BaseEnv):
             if self.mappo_reward:
                 rewards[:]=rewards.mean()
             
-            # TODO: why use set reached to done doesn't work
-            # dones=torch.zeros_like(reached[...,None])
             dones=reached[...,None]
 
         rets = {
@@ -785,19 +669,13 @@ class LMAPFEnv(BaseEnv):
     def set_prev_step_data(self, data):
         self.prev_step_data=data
         
-    # def update_guiding_rewards(self, guiding_rewards):
-    #     self.total_rewards+=guiding_rewards
-    #     self.total_guiding_rewards+=guiding_rewards
-        
     def get_episode_log(self):
         return self.episode_log
     
     def get_episode_stats(self):
-        # TODO: add more statistics
         mean_reward=torch.mean(self.total_rewards)
         mean_individual_reward=torch.mean(self.total_individual_rewards)
         mean_team_reward=torch.mean(self.total_team_rewards)
-        # mean_guiding_reward=torch.mean(self.total_guiding_rewards)
         mean_throughput=torch.sum(self.total_completed_tasks)/(self.step_ctr+1e-9)
         valid_rate=self.valid_ctr/(self.step_ctr+1e-9)
         mean_action_cnts=torch.mean(self.action_cnts,dim=0)
@@ -836,32 +714,21 @@ class LMAPFEnv(BaseEnv):
         if reached is not None:
             self.tasks_completed+=reached
             agent_idxs=torch.nonzero(reached,as_tuple=True)[0]
-            # print(agent_idxs)
             # roundrobin in LRR implementation            
             task_idxs=(self.tasks_completed[agent_idxs]*self.num_robots+agent_idxs)%len(self.tasks)
             return self.tasks[task_idxs]
         else:
             if not self._tasks_loaded:
-                # idxs=torch.randint(0,len(self.empty_locations),(num,))
-                # return self.empty_locations[idxs]
                 self.tasks=self.empty_locations[torch.randint(0,len(self.empty_locations),(num,))]
             # init targets
             return self.tasks[:self.num_robots]
 
-    def get_observations(self):
-
-        # TODO(rivers)：we will just implement several simple features. please refer to yutong's code for better designs. 
-        # also refer to the paper: maybe we can add hints for the cost reduce of each action, the angle between the direction of goals, etc.
-        # I believe they are also important.
-        
+    def get_observations(self):        
         # # num_robots, FOV_height, FOV_width, 2
         # local_views=self.curr_positions[:,None,None,:]+self.local_view_offsets
         # offsetted_local_views=local_views+self.padded_graph_offsets
         
         global_timer.record("func_get_h_s")
-        
-        
-        # global_timer.record("func_get_h_s")
         
         curr_positions=self.curr_positions
         views=self.local_view_offsets
@@ -902,11 +769,6 @@ class LMAPFEnv(BaseEnv):
         local_agents_map=torch.sign(local_agents_map-local_agents_map[:,self.FOV_height//2:self.FOV_height//2+1,self.FOV_width//2:self.FOV_width//2+1])
         local_agents_map[_masks]=0
         
-        # NOTE(rivers): currently agents and targets have no association at all. this is something interesting to me.
-        # global_targets_map=torch.zeros_like(self.padded_graph)
-        # global_targets_map[self.target_positions[:,0]+self.FOV_height//2,self.target_positions[:,1]+self.FOV_width//2]=1
-        # local_targets_map=global_targets_map[offsetted_local_views[...,0],offsetted_local_views[...,1]]
-        
         # TODO: Feature 3: Heauristic Distance with cliping or maybe sigmoid? or normalized by the shortest distance?
         # num_robots, FOV_height, FOV_width
         
@@ -928,15 +790,6 @@ class LMAPFEnv(BaseEnv):
             ranks = ranks.reshape(self.num_robots,self.FOV_height,self.FOV_width)
             heuristics_map_1 = ranks/(self.FOV_height*self.FOV_width)
             heuristics_map_1[~masks]=-1
-            
-            
-        
-        # TODO: we need a global view to provide information
-
-        # normalize
-        # num_robots, 1, 1
-        # shortest_heuristics=self.heuristic_table.get(self.curr_positions[:,None,None,:],self.target_positions)
-        # normalized_heuristic_map=heuristics_map/shortest_heuristics*0.5
         
         # Feature 4: location embedding
         
@@ -947,41 +800,10 @@ class LMAPFEnv(BaseEnv):
         observations[:,2]=heuristics_map_1
         # TODO: we may use or may not use this feature
         observations[:,3]=heuristics_map_2
-        # observations[:,4]=local_targets_map
-        
-        # TODO: whether this location is the target of another agent
-        
-        # location embedding
-        # observations[:,4]=self.padded_graph_location_ys[offsetted_local_views[...,0],offsetted_local_views[...,1]]
-        # observations[:,5]=self.padded_graph_location_xs[offsetted_local_views[...,0],offsetted_local_views[...,1]]
-        
-        # if len(self.history)==0:
-        #     for i in range(self.history_len):
-        #         self.history.append(observations[:,1].reshape(self.num_robots,-1))
-                
-        # self.history.pop(0)
-        # self.history.append(observations[:,1].reshape(self.num_robots,-1))
         
         observations=observations.reshape(self.num_robots,-1)
-        
-        # edge_idices, edge_masks=self.get_neighbors(max_dist=self.FOV_height,num_closest=self.num_edges)
-        # edge_idices=edge_idices.reshape(self.num_robots, self.num_edges*2)
-        
-        # steps=torch.full_like(self.priorities,fill_value=self.step_ctr/self.rollout_length,dtype=torch.float32,device=self.device).reshape(-1,1)
-        
-        # conflict_pairs=self.get_conflict_pairs(self.curr_positions)
-        # conflict_pairs=conflict_pairs.reshape(self.num_robots,-1)
-        
-        # obs_neighboring_masks, act_neighboring_masks=self.get_neighboring_obs_act_masks(max_dist=self.FOV_height, num_closest=self.num_edges)
-        # observations=torch.cat([observations, obs_neighboring_masks, act_neighboring_masks, self.priorities.unsqueeze(-1),self.curr_positions,self.target_positions],dim=-1)
-        
-        # observations=torch.cat([observations, self.priorities.unsqueeze(-1),self.curr_positions,self.target_positions],dim=-1)
-        
-        # observations=torch.cat(self.history[:-1]+[observations], dim=-1)
 
         observations=torch.cat([observations, self.perm_indices.unsqueeze(-1), self.reverse_perm_indices.unsqueeze(-1), self.priorities.unsqueeze(-1),self.curr_positions,self.target_positions],dim=-1)
-        
-        #observations=torch.cat([observations, edge_idices, edge_masks, self.priorities.unsqueeze(-1),self.curr_positions,self.target_positions],dim=-1)
         
         global_timer.time("get_feat_s","get_feats_e","get_feats")
         
@@ -1004,90 +826,6 @@ class LMAPFEnv(BaseEnv):
         
         return observations, global_observations
     
-    # Maybe we should have a BFS?
-    # Maybe we want a best cover?
-    # we may keep edge features
-    def get_neighbors(self, max_dist, num_closest):
-        # stategy 1: only those in the dist, closest 
-        
-        # l1-dist
-        dists=torch.abs(self.curr_positions[:,None,:]-self.curr_positions[None,:,:]).sum(dim=-1)
-        edge_dists, second_indices = torch.topk(dists,num_closest,largest=False)
-        
-        first_indices=torch.arange(len(self.curr_positions),dtype=torch.long,device=self.device).reshape(-1,1).repeat(1,num_closest)
-        
-        # num_robots, K
-        edge_masks = edge_dists<=max_dist #torch.logical_and(edge_dists<=max_dist,edge_dists>0)
-        
-        # num_robots, K, 2
-        edge_indices=torch.stack([first_indices, second_indices], dim=-1)
-        
-        return edge_indices, edge_masks
-    
-    def get_neighboring_obs_act_masks(self, max_dist, num_closest):
-        obs_edge_indices, obs_edge_masks=self.get_neighbors(max_dist,num_closest)
-        
-        # num_robots*K, 2
-        obs_edge_indices = obs_edge_indices.reshape(-1,2)
-        # num_robots*K
-        obs_edge_masks = obs_edge_masks.reshape(-1)
-        obs_edge_indices = obs_edge_indices[obs_edge_masks]
-        
-        reverse_obs_edge_indices=obs_edge_indices[...,[1,0]]
-        
-        # observarion neighboring edges
-        obs_edge_indices = torch.concat([obs_edge_indices,reverse_obs_edge_indices],dim=0)
-
-        # False is not connected
-        obs_neighboring_masks=torch.zeros([self.num_robots,self.num_robots], dtype=torch.bool, device=self.device)
-        obs_neighboring_masks[obs_edge_indices[...,0],obs_edge_indices[...,1]]=True
-
-        # only keep casual edges
-        act_edge_masks = obs_edge_indices[...,0]>=obs_edge_indices[...,1]
-        act_edge_indices = obs_edge_indices[act_edge_masks]
-        
-        act_neighboring_masks=torch.zeros([self.num_robots,self.num_robots], dtype=torch.bool, device=self.device)
-        act_neighboring_masks[act_edge_indices[...,0],act_edge_indices[...,1]]=True
-        
-        # act_neighboring_masks = torch.tril(torch.ones(self.num_robots,self.num_robots, dtype=torch.bool, device=self.device))
-        
-        # assert self.permute
-        # if self.permute:
-        #     # NOTE: we only permute columns here, rows will be permuted with other observations later
-        #     obs_neighboring_masks=obs_neighboring_masks[...,self.perm_indices]
-        #     act_neighboring_masks=act_neighboring_masks[...,self.perm_indices]
-            
-        return obs_neighboring_masks, act_neighboring_masks
-    
-    def get_conflict_pairs(self, positions):
-        
-        # NOTE: other agents' positions-this agent's position
-        diff=(positions[None,:,:]-positions[:,None,:]).cpu().numpy()
-        
-        # TODO: need to double check
-        conflict_pairs=[]
-        for a2 in range(self.num_robots):
-            for a1 in range(self.num_robots):
-                dy,dx=diff[a2,a1]
-                if (dy,dx) in self.conflict_action_table:
-                    conflict_actions=self.conflict_action_table[(dy,dx)]
-                    # TODO: we could remove invalid actions here
-                    for act1,act2 in conflict_actions:
-                        conflict_pairs.append((a1,act1,a2,act2))
-
-
-        max_conflict_pairs=self.num_conflict_actions*self.num_robots
-        conflict_pair_masks=torch.zeros(size=(max_conflict_pairs,1),dtype=torch.int32,device=self.device)
-        
-        conflict_pairs=torch.tensor(conflict_pairs,device=self.device,dtype=torch.int32) 
-        conflict_pair_masks[:len(conflict_pairs)]=1
-        padding_pairs=torch.zeros(size=(max_conflict_pairs-len(conflict_pairs),4),dtype=torch.int32,device=self.device)
-        conflict_pairs=torch.concat([conflict_pairs,padding_pairs],dim=0)
-        
-        conflict_pairs=torch.concat([conflict_pairs,conflict_pair_masks],dim=-1)
-        
-        return conflict_pairs
-    
     def get_action_masks(self):
         '''
         1 - valid action
@@ -1106,8 +844,6 @@ class LMAPFEnv(BaseEnv):
         return action_masks
 
     def get_rewards(self, prev_distances, curr_distances, reached):
-        
-        # TODO depends on heuristics
         dist_reward=1.0
         reached_reward=0.0
         
@@ -1118,41 +854,9 @@ class LMAPFEnv(BaseEnv):
         
         team_rewards=self.get_team_rewards(individual_rewards)
         
-        #print(team_rewards.std(),team_rewards.min(),team_rewards.max(),team_rewards.size())
-        
         rewards=individual_rewards*individual_rewards_coef+team_rewards_coef*team_rewards+reached.float()*reached_reward
         
         return rewards, individual_rewards, team_rewards
-    
-    def connected_componenets_bfs_search(self, positions):
-        agent_map=torch.full_like(self.graph,fill_value=-1,dtype=torch.float32,device=self.device)
-        agent_map[positions[:,0],positions[:,1]]=torch.arange(len(positions),device=self.device)
-        visited=torch.zeros((self.num_robots,),dtype=bool,device=self.device)
-        components=[]
-        for i in range(self.num_robots):
-            if not visited[i]:
-                component=self.bfs_search(i,visited)
-                components.append(component)
-        return components
-    
-    def bfs_search(self, i, visited, positions, agent_map):
-        component=[]
-        q=queue.Queue()
-        q.put(i)
-        visited[i]=True
-        component.append(i)
-        while not q.empty():
-            agent_idx=q.get()
-            # for each neighbor
-            for movement in self.movements:
-                next_position=positions[agent_idx]+movement
-                next_agent_idx=agent_map[next_position[0],next_position[1]]
-                if next_agent_idx>=0 and not visited[next_agent_idx]:
-                    visited[next_agent_idx]=True
-                    component.append(next_agent_idx)
-                    q.put(next_agent_idx)
-                       
-        return component
     
     def get_team_rewards(self, rewards):
         
@@ -1186,36 +890,6 @@ class LMAPFEnv(BaseEnv):
     
     def render(self):
         pass
-    
-    def get_observations_and_rewards_for_GGO(self):
-        '''
-        This function will only be called after the evironment ends and used for GGO optimization
-        '''
-        
-        # algorithm
-        # MAPPO
-        # TODO: should we consider DDPG?
-        
-        # features
-        # 1. map
-        # 2. vertex usages
-        # 3. edges usages
-        
-        # action spaces
-        # predict delta or the eventual value?
-        
-        # rewards
-        # 1. mean total individual rewards
-        # 2. TODO: mean local region rewards
-        
-        # normalize vertex usages
-        self.vertex_usages=self.vertex_usages/self.step_ctr
-        self.edge_usages=self.edge_usages/self.step_ctr
-        
-        observations=torch.stack([map.graph.float(),self.vertex_usages,self.edge_usages],dim=0)
-        
-        return {   
-        }
 
 @registry.registered(registry.ENV, "LMAPF")
 class MultiLMAPFEnv(BaseEnv):
