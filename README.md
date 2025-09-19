@@ -54,6 +54,8 @@ See `train.sh`. The training successfully starts for imiation learning if you se
 
 ![successful_run](figs/successful_run.png)
 
+NOTE that I abuse the usage of Logger for colored logs. So, if you see something like red errors or yellow warnings in the terminal, just read the messages, and it is very likely just fine.
+
 ### Configuration of experiments
 Please take a look at lines with **NOTE** in comments in the example configuration file `expr_configs/paper_exps_v3/small/bootstrap_from_pibt_iter1_sortation_small_a600_s500_none_annotated_1gpu.yaml`. These lines are those ones you probably want to modify in your experiments.
 
@@ -84,4 +86,4 @@ You can take a look at the last tens of lines in the file `light_malib/envs/LMAP
 ## TODO
 1. recompile everything in an empty env to check the dependencies.
 2. add more documentation.
-3. organize/re-write code.
+3. organize/re-write code (I have some spare time working on it recently. Stay tuned.)
