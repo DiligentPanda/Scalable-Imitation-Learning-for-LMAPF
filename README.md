@@ -2,6 +2,8 @@
 
 This repo maintains the code for the paper, which won the on the ICRA 2025 best paper on multi-robot systems and the best student paper.
 
+This work builds upon a critical idea, [Collision-Shield PIBT](https://github.com/Rishi-V/ML-MAPF-with-Search), which bridges search-based and learning-based approaches for (Lifelong) Multi-Agent Path Finding.
+
 There are some other amazing repos involved and maintained in the `lmapf_lib` folder. 
 1. [Guided-PIBT](https://github.com/nobodyczcz/Guided-PIBT)
 2. [learn-to-follow](https://github.com/AIRI-Institute/learn-to-follow)
