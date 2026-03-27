@@ -62,7 +62,7 @@ NOTE that I abuse the usage of Logger for colored logs. So, if you see something
 Please take a look at lines with **NOTE** in comments in the example configuration file `expr_configs/paper_exps_v3/small/bootstrap_from_pibt_iter1_sortation_small_a600_s500_none_annotated_1gpu.yaml`. These lines are those ones you probably want to modify in your experiments.
 
 ### Computational Resources
-I usually train models with 4 RTX4090D (24GB) and roughly 64 vCPUs. But since it is imitation learning fundamentally, less computational resources also work (need to modifythe experiment configs). 
+I trained models with 4 RTX4090D (24GB) and roughly 64 vCPUs on Ubuntu 20.04. But since it is imitation learning fundamentally, less computational resources also work (need to modifythe experiment configs). 
 
 `expr_configs/paper_exps_v3/small/bootstrap_from_pibt_iter1_sortation_small_a600_s500_none_annotated_1gpu.yaml` gives an example for 1 RTX4090D (24GB memory) and 16 vCPUs (80GB memory).
 
@@ -88,4 +88,4 @@ You can take a look at the last tens of lines in the file `light_malib/envs/LMAP
 ## TODO
 1. recompile everything in an empty env to check the dependencies.
 2. add more documentation.
-3. organize/re-write code (I have some spare time working on it recently. Stay tuned.)
+3. organize/re-write code
